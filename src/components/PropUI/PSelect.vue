@@ -1,6 +1,6 @@
 <template>
   <div class="p-select flex flex-row items-center h-7 my-3">
-    <span class="mr-1 w-20" v-show="data.name">{{ data.name }}</span>
+    <span v-show="data.name" class="mr-1 w-20">{{ data.name }}</span>
     <div
       class="px-1 relative flex flex-row flex-1 border border-solid border-zinc-300 rounded h-7 items-center"
     >
@@ -13,24 +13,24 @@
         @click.prevent="() => (open = true)"
       />
       <PhCaretDown
+        v-show="!open"
         :size="14"
         weight="thin"
         class="mx-1"
-        v-show="!open"
         @click="() => (open = !open)"
       />
       <PhCaretUp
+        v-show="open"
         :size="14"
         weight="thin"
         class="mx-1"
-        v-show="open"
         @click="() => (open = !open)"
       />
       <div
-        class="select-list absolute border border-solid border-zinc-300 py-2 px-4 bg-white w-full"
         v-show="open"
+        class="select-list absolute border border-solid border-zinc-300 py-2 px-4 bg-white w-full"
       >
-        <div class="p-1" @click="selectEvt(item)" v-for="item in data.list" :key="item.value">
+        <div v-for="item in data.list" :key="item.value" class="p-1" @click="selectEvt(item)">
           {{ item.name }}
         </div>
       </div>

@@ -8,7 +8,7 @@
       }"
     >
       <span>{{ data.name }}</span>
-      <PhQuestion :size="14" v-show="tips" class="mb-0.5" />
+      <PhQuestion v-show="tips" :size="14" class="mb-0.5" />
     </div>
     <div
       class="flex-1 border border-solid border-zinc-300 rounded h-7 px-2"
@@ -29,7 +29,7 @@ defineProps<{
     name: string
   }
 }>()
-const model = defineModel()
+const model = defineModel<string>()
 const inputVal = ref(model.value)
 const changeEvt = (e: Event) => {
   const target = e.target as HTMLInputElement

@@ -20,7 +20,7 @@
           @mouseleave="() => (showh = false)"
           @click="cutContainer('row')"
         />
-        <div class="h-cut-line" :style="deviderStyle.hLine" v-show="showh"></div>
+        <div v-show="showh" class="h-cut-line" :style="deviderStyle.hLine"></div>
         <PhScissors
           :size="24"
           weight="duotone"
@@ -31,7 +31,7 @@
           @mouseleave="() => (showv = false)"
           @click="cutContainer('column')"
         />
-        <div class="v-cut-line" :style="deviderStyle.vLine" v-show="showv"></div>
+        <div v-show="showv" class="v-cut-line" :style="deviderStyle.vLine"></div>
       </template>
     </div>
   </div>

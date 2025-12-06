@@ -5,13 +5,13 @@
       <div class="flex flex-row border border-solid border-zinc-300 ml-2.5 rounded">
         <component
           :is="item.icon"
-          class="icon border-solid border-zinc-300 w-8"
-          :class="{ 'border-l': index > 0 }"
           v-for="(item, index) in display"
           :key="item.id"
+          v-dialog:[item.id]="item.value"
+          class="icon border-solid border-zinc-300 w-8"
+          :class="[index > 0 && 'border-l']"
           :size="24"
           weight="thin"
-          v-dialog:[item.id]="item.value"
           @click="clickEvt(item.value)"
         />
       </div>
@@ -120,8 +120,7 @@
 import { ref, reactive, markRaw, watch, inject } from 'vue'
 import { PhSquareLogo } from '@phosphor-icons/vue'
 import { vDialog } from '@/plugins/CusDirectives'
-import PUnit from './PUnit.vue'
-import FoldAndOpen from './FoldAndOpen.vue'
+import { PUnit, FoldAndOpen } from './index'
 const display = ref([
   { icon: markRaw(PhSquareLogo), value: 'inline', id: 'dInline' },
   { icon: markRaw(PhSquareLogo), value: 'flex', id: 'dFlex' },

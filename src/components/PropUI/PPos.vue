@@ -20,10 +20,7 @@ import {
   PhTextAlignLeft,
   PhTextAlignRight,
 } from '@phosphor-icons/vue'
-import PRadio from './PRadio.vue'
-import PSelect from './PSelect.vue'
-import PUnit from './PUnit.vue'
-import FoldAndOpen from './FoldAndOpen.vue'
+import { PRadio, PSelect, PUnit, FoldAndOpen } from './index'
 interface ListItem {
   name: string | Component
   value: string

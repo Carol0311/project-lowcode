@@ -8,9 +8,7 @@
 import type { Component } from 'vue'
 import { ref, markRaw, inject } from 'vue'
 import { PhPaintBucket, PhImageSquare } from '@phosphor-icons/vue'
-import PRadio from './PRadio.vue'
-import POpacity from './POpacity.vue'
-import FoldAndOpen from './FoldAndOpen.vue'
+import { PRadio, POpacity, FoldAndOpen } from './index'
 interface ListItem {
   name: string | Component
   value: string

@@ -2,28 +2,28 @@
   <div class="p-radio flex flex-row my-3 items-center">
     <div class="mr-1 w-20">
       <span>{{ data.name }}</span>
-      <PhQuestion :size="14" v-show="tips" class="mb-0.5" />
+      <PhQuestion v-show="tips" :size="14" class="mb-0.5" />
     </div>
     <div
       class="flex-1 flex flex-row border border-solid border-zinc-300 rounded"
       :class="{ 'flex-wrap': data.wrap }"
     >
       <div
-        class="item flex-1 px-2 h-7 leading-7 border-l border-solid border-zinc-300 text-center hover:bg-orange-300"
-        :class="{ 'border-b': data.wrap, 'bg-orange-300 text-white': select === item.value }"
         v-for="item in data.list"
         :key="item.value"
+        class="item flex-1 px-2 h-7 leading-7 border-l border-solid border-zinc-300 text-center hover:bg-orange-300"
+        :class="{ 'border-b': data.wrap, 'bg-orange-300 text-white': select === item.value }"
         @click="changeEvt(item)"
       >
         <template v-if="typeof item.name === 'string'">
           {{ item.name }}
         </template>
-        <component v-else :is="item.name" />
+        <component :is="item.name" v-else />
       </div>
     </div>
   </div>
 </template>
-<script lang="ts" setup>
+<script setup lang="ts">
 import type { Component } from 'vue'
 import { ref, watch, inject } from 'vue'
 import { PhQuestion } from '@phosphor-icons/vue'
@@ -41,7 +41,7 @@ defineProps<{
   }
 }>()
 const propsChange = inject<{ update: () => void }>('propsChange')
-const model = defineModel()
+const model = defineModel<number | string>()
 const select = ref(model.value)
 const changeEvt = (item: any) => {
   model.value = item.value

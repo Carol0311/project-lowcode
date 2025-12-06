@@ -29,18 +29,13 @@
 <script lang="ts" setup>
 import type { Component } from 'vue'
 import { ref, markRaw, inject } from 'vue'
-import PSelect from './PSelect.vue'
-import PUnit from './PUnit.vue'
-import PColor from './PColor.vue'
 import {
   PhTextAlignLeft,
   PhTextAlignRight,
   PhTextAlignCenter,
   PhTextAlignJustify,
 } from '@phosphor-icons/vue'
-import POpacity from './POpacity.vue'
-import PRadio from './PRadio.vue'
-import FoldAndOpen from './FoldAndOpen.vue'
+import { PSelect, PUnit, PColor, POpacity, PRadio, FoldAndOpen } from './index'
 interface ListItem {
   name: string | Component
   value: number | string

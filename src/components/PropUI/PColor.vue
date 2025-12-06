@@ -1,6 +1,6 @@
 <template>
   <div class="p-color flex flex-row items-center h-7 my-3">
-    <div class="mr-1 w-20" v-show="data.name">{{ data.name }}</div>
+    <div v-show="data.name" class="mr-1 w-20">{{ data.name }}</div>
     <div class="flex flex-row flex-1 border border-zinc-300 rounded h-full items-center">
       <input
         ref="colorPicker"
@@ -28,7 +28,7 @@ const props = defineProps<{
     color?: string
   }
 }>()
-const curColor = ref(props.data.color) || '#333333'
+const curColor = ref(props.data.color) || ref('#333333')
 const colorPicker = ref<HTMLElement>()
 const openPicker = function () {
   colorPicker.value?.click()

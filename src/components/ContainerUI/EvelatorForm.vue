@@ -1,5 +1,5 @@
 <template>
-  <div class="smart-tabgroup" ref="anchorGroup">
+  <div ref="anchorGroup" class="smart-tabgroup">
     <div v-if="data.props.showAnchor" class="smart-tabgroup-anchor bg-white">
       <div class="inline-flex bg-gray-100 p-1 rounded relative">
         <div
@@ -7,10 +7,10 @@
           :class="{ 'flex-row': data.props.direct === 0, 'flex-col': data.props.direct === 1 }"
         >
           <div
-            class="item px-4 h-6 leading-6 cursor-pointer z-10"
-            :class="{ 'text-orange-300': active === i }"
             v-for="(tab, i) in data.children"
             :key="i"
+            class="item px-4 h-6 leading-6 cursor-pointer z-10"
+            :class="{ 'text-orange-300': active === i }"
             @click="(e) => clickEvt(i, e)"
           >
             {{ tab.props.tabTitle }}
@@ -24,11 +24,11 @@
     </div>
     <div>
       <component
-        class="smart-tab"
+        :is="child.type"
         v-for="child in data.children"
         :key="child.id"
+        class="smart-tab"
         :data="child"
-        :is="child.type"
       />
     </div>
   </div>
@@ -48,7 +48,7 @@ interface ComponentNode {
   children?: ComponentNode[]
 }
 const eventBus = useEventBus()
-const anchorGroup = useTemplateRef('anchorGroup')
+const anchorGroup = useTemplateRef<HTMLElement>('anchorGroup')
 const active = ref(0)
 const tabsTop: number[] = []
 const anchorsList: number[][] = []

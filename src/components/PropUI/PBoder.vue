@@ -9,7 +9,6 @@
         <span
           v-for="i in [0, 1, 2, 3, 4]"
           :key="i"
-          @click="borderEvt($event, i)"
           :style="{ ...borderDatas[i], borderWidth: borderDatas[i].borderWidth + 'px' }"
           :class="{
             'border-dotted': i !== 1,
@@ -20,6 +19,7 @@
             bottom: i == 4,
             absolute: i > 2,
           }"
+          @click="borderEvt($event, i)"
         ></span>
       </div>
       <div v-show="selectBorder" class="absolute bg-white select-border">
@@ -51,11 +51,7 @@ import {
   /**PhSubtractSquare,
   PhImagesSquare,*/
 } from '@phosphor-icons/vue'
-import PRadio from './PRadio.vue'
-import PUnit from './PUnit.vue'
-import PColor from './PColor.vue'
-import PSelect from './PSelect.vue'
-import FoldAndOpen from './FoldAndOpen.vue'
+import { PRadio, PUnit, PColor, PSelect, FoldAndOpen } from './index'
 const selectBorder = ref(false)
 const active = ref(0)
 interface ListItem {

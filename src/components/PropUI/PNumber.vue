@@ -2,7 +2,7 @@
   <div class="p-number flex flex-row my-3 items-center">
     <div class="mr-1 w-20">
       <span>{{ name }}</span>
-      <PhQuestion :size="14" v-show="tips" class="mb-0.5" />
+      <PhQuestion v-show="tips" :size="14" class="mb-0.5" />
     </div>
     <div class="flex-1 border border-solid border-zinc-300 rounded h-7 px-2">
       <input type="text" @keyup="keyUp" />

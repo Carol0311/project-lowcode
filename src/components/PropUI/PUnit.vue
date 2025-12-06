@@ -1,6 +1,6 @@
 <template>
   <div class="p-unit flex flex-row items-center relative h-7 my-3 justify-between">
-    <div class="mr-1" v-show="data.name" :class="{ 'w-20': data.single, 'w-7': !data.single }">
+    <div v-show="data.name" class="mr-1" :class="{ 'w-20': data.single, 'w-7': !data.single }">
       {{ data.name }}
     </div>
     <div class="box flex-1 flex flex-row border border-solid border-zinc-300 rounded items-center">
@@ -10,11 +10,11 @@
       <div v-show="unit" class="mr-1" @click="() => (showList = !showList)">{{ unit }}</div>
       <div class="flex flex-col border-l border-solid border-zinc-300 h-7 text-center">
         <span
-          @click="plus"
           class="plus h-3.5 inline-block border-b border-solid border-zinc-300 cursor-pointer"
+          @click="plus"
           ><PhCaretUp :size="12" weight="thin"
         /></span>
-        <span @click="minus" class="minus h-3.5 inline-block cursor-pointer"
+        <span class="minus h-3.5 inline-block cursor-pointer" @click="minus"
           ><PhCaretDown :size="12" weight="thin"
         /></span>
       </div>
@@ -24,11 +24,11 @@
       class="absolute unit-list border border-solid border-zinc-300 rounded bg-white text-center"
     >
       <div
-        @click.stop="selectUnit(item)"
         v-for="(item, index) in unitList"
         :key="item.value"
         class="hover:bg-zinc-300"
         :class="{ 'border-t border-solid border-zinc-300': index > 0 }"
+        @click.stop="selectUnit(item)"
       >
         {{ item.name }}
       </div>

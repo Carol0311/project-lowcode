@@ -5,7 +5,7 @@
       <PhCaretDown v-show="open" :size="16" weight="thin" />
       <div class="ml-1">{{ data.name }}</div>
     </div>
-    <div class="body bg-white mt-2.5 mx-auto" v-show="open">
+    <div v-show="open" class="body bg-white mt-2.5 mx-auto">
       <slot></slot>
     </div>
   </div>

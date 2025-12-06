@@ -2,15 +2,15 @@
   <div class="p-switch flex flex-row my-3 items-center">
     <div class="mr-1 w-20">
       <span>{{ data.name }}</span>
-      <PhQuestion :size="14" v-show="tips" class="mb-0.5" weight="light" />
+      <PhQuestion v-show="tips" :size="14" class="mb-0.5" weight="light" />
     </div>
     <div class="flex-1 text-gray-200">
-      <PhToggleLeft :size="28" weight="fill" v-show="!open" @click="changeEvt" />
+      <PhToggleLeft v-show="!open" :size="28" weight="fill" @click="changeEvt" />
       <PhToggleRight
+        v-show="open"
         :size="28"
         weight="fill"
         class="text-orange-300"
-        v-show="open"
         @click="changeEvt"
       />
     </div>
@@ -26,7 +26,7 @@ defineProps<{
   }
 }>()
 const propsChange = inject<{ update: () => void }>('propsChange')
-const model = defineModel()
+const model = defineModel<boolean>()
 const open = ref(model.value)
 //属性值更新时立即更新对应组件属性数据
 const changeEvt = () => {

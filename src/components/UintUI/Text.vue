@@ -5,13 +5,13 @@
     :colspan="config.col"
     @click.stop="ui.uiEvents.click"
   >
-    <div :class="[ui.uiStatic.outLabel, outLabel]" v-if="labelPos !== 'inner'">
+    <div v-if="labelPos !== 'inner'" :class="[ui.uiStatic.outLabel, outLabel]">
       <label>{{ config.label }}</label>
       <PhQuestion
         v-if="config.tip"
+        v-dialog:[config.id]="config.label"
         :size="16"
         weight="light"
-        v-dialog:[config.id]="config.label"
         class="inline-block mb-1 cursor-pointer"
       />
       <PhAsterisk
@@ -22,14 +22,14 @@
     </div>
     <div :class="[ui.uiStatic.ctrl, ctrl]">
       <span :class="[ui.uiStatic.inputBox, inputBox]" :style="config.inlineStyle">
-        <label :class="ui.uiStatic.innerLabel" v-if="labelPos === 'inner'">
+        <label v-if="labelPos === 'inner'" :class="ui.uiStatic.innerLabel">
           <div>
             <label>{{ config.label }}</label>
             <PhQuestion
               v-if="config.tip"
+              v-dialog:[config.id]="config.label"
               :size="16"
               weight="light"
-              v-dialog:[config.id]="config.label"
               class="inline-block mb-1 cursor-pointer"
             />
             <PhAsterisk
@@ -40,6 +40,7 @@
           </div>
         </label>
         <input
+          :id="config.id"
           ref="inputRef"
           :class="[ui.uiStatic.input]"
           autocomplete="false"
@@ -48,7 +49,6 @@
           :disabled="config.disable"
           :readonly="config.readonly || config.tabStatus === 0"
           value=""
-          :id="config.id"
           componentname=""
         />
         <span v-if="config.clear || config.showIcon" :class="[ui.uiStatic.icon]">
@@ -62,8 +62,8 @@
       </span>
       <Info
         v-if="config.errTip || config.helpTip"
-        :errTip="config.errTip"
-        :helpTip="config.helpTip"
+        :err-tip="config.errTip"
+        :help-tip="config.helpTip"
       />
     </div>
   </div>

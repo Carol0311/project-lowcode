@@ -1,7 +1,7 @@
 <template>
   <div
-    class="smart-tab border border-solid border-zinc-300 mb-5 rounded bg-white"
     ref="FormRef"
+    class="smart-tab border border-solid border-zinc-300 mb-5 rounded bg-white"
     @click.stop="clickRef"
   >
     <div class="smart-tab-head px-4">
@@ -13,17 +13,17 @@
     </div>
     <div class="smart-tab-body py-3 px-4">
       <div class="smart-tab-content overflow-hidden" :style="{ height: `${tabFormHeight}px` }">
-        <div class="smart-tab-form" ref="tabForm">
+        <div ref="tabForm" class="smart-tab-form">
           <div
             class="grid gap-4"
             :style="`grid-template-columns: repeat(${config.tabLayout}, minmax(0, 1fr));`"
           >
-            <component v-for="com in data.children" :key="com.id" :is="com.type" :data="com" />
+            <component :is="com.type" v-for="com in data.children" :key="com.id" :data="com" />
           </div>
         </div>
       </div>
       <div class="smart-tab-footer text-orange-300 text-xs">
-        <div @click="clickEvt" class="flex flex-row items-center">
+        <div class="flex flex-row items-center" @click="clickEvt">
           <span>{{ direct }}</span>
           <PhCaretDown v-show="fold" :size="14" weight="light" />
           <PhCaretUp v-show="!fold" :size="14" weight="light" />
@@ -55,9 +55,9 @@ const props = defineProps<{
 /**展开收起功能*/
 const fold = ref(true)
 const direct = ref('展开')
-const FormRef = useTemplateRef('FormRef')
+const FormRef = useTemplateRef<HTMLElement>('FormRef')
 const config = computed(() => props.data.props)
-const tabForm = useTemplateRef('tabForm')
+const tabForm = useTemplateRef<HTMLElement>('tabForm')
 const tabFormHeight = ref(100)
 onMounted(() => {
   tabFormHeight.value = fold.value ? 100 : tabForm.value?.clientHeight || 100

@@ -1,17 +1,17 @@
 <template>
-  <div class="p-opacity my-3 flex -felx-row items-center" ref="opacityRef">
+  <div ref="opacityRef" class="p-opacity my-3 flex -felx-row items-center">
     <div>{{ name }}</div>
     <div class="flex-1 flex flex-row items-center">
-      <div class="line bg-gray-200 mx-1 flex-1 relative" ref="progressRef" @click="tracePos">
+      <div ref="progressRef" class="line bg-gray-200 mx-1 flex-1 relative" @click="tracePos">
         <div
           class="opacity-number absolute bg-orange-300"
           :style="{ width: distance + 'px' }"
         ></div>
         <span
+          :style="{ left: distance + 'px' }"
           class="bg-white absolute border border-orange-300"
           @mousedown="dragEvt"
           @touchstart.passive="dragEvt"
-          :style="{ left: distance + 'px' }"
         ></span>
       </div>
       <PUnit :data="opacityData" />
@@ -20,7 +20,7 @@
 </template>
 <script setup lang="ts">
 import { onUnmounted, ref } from 'vue'
-import PUnit from './PUnit.vue'
+import { PUnit } from './index'
 const emit = defineEmits(['change'])
 const name = ref('透明度')
 interface OpacityItem {

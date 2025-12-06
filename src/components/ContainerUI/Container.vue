@@ -6,11 +6,11 @@
       'flex-col': flexDirect === 'column',
       'flex-row': flexDirect === 'row',
     }"
-    @click.stop="clickRef"
     :data-id="data.id"
+    @click.stop="clickRef"
   >
     <template v-if="data.children && data.children.length > 0">
-      <component v-for="com in data.children" :key="com.id" :is="com.type" :data="com"></component>
+      <component :is="com.type" v-for="com in data.children" :key="com.id" :data="com"></component>
     </template>
     <div v-else class="empty-placeholder min-h-16 flex justify-center items-center text-zinc-500">
       拖拽组件或模版到这里
