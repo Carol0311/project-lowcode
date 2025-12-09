@@ -4,6 +4,7 @@ import type { ComponentSchema } from './component'
 export interface PageSchema {
   id: string
   name: string
-  rootComponentIds: string[]
-  components: Record<string, ComponentSchema>
+  rootComponentIds: string[] //页面根节点id
+  components: Record<string, ComponentSchema> //存放id-->nodes映射
+  children: Record<string, string[]> //存放id--->childrenIds映射
 }

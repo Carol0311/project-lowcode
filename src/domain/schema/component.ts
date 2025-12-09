@@ -23,5 +23,5 @@ export interface ComponentSchema {
   parentId: string | null
   type: ComponentType
   props: Record<string, any>
-  children: string[] //保存子节点id
+  children?: string[] //保存子节点id
 }
