@@ -1,5 +1,5 @@
-import type { Component } from 'vue'
 import { reactive, computed, ref } from 'vue'
+import type { ComponentSchema } from '@/domain/schema/component'
 import { useEventBus } from './useEventBus'
 import { useEditorStore } from '@/stores/editorStore'
 /**组件通用设置参数*/
@@ -51,13 +51,6 @@ export interface UiConfig {
   /**表单项inputBox层级的样式*/
   inlineStyle: Record<string, any> //设计器样式面板设置的样式最终会以字符串的形式拼接起来done
 }
-interface ComponentNode {
-  id: string
-  parent: string
-  type: Component
-  props: Record<string, any>
-  children?: ComponentNode[]
-}
 /**组件交互状态*/
 export interface UiState {
   isFocus: boolean
@@ -67,7 +60,7 @@ export const useUiConfig = (initialConfig: Partial<UiConfig>) => {
   const eventBus = useEventBus()
   const editorStore = useEditorStore()
   const { findComponentById, updateComponentById } = editorStore
-  const parentCom = ref<ComponentNode | null>(null)
+  const parentCom = ref<ComponentSchema>()
   const config = reactive<UiConfig>({
     label: '标签标题',
     size: 1,

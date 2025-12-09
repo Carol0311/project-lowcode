@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, reactive, computed } from 'vue'
 import { deepClone, generateUniqueId } from '@/utils/index'
-import { ComponentSchema } from '@/domain/schema/component'
+import { ComponentSchema, ComponentType } from '@/domain/schema/component'
 import { ProjectSchema } from '@/domain/schema/project'
 import { PageSchema } from '@/domain/schema/page'
 
@@ -116,9 +116,19 @@ export const useEditorStore = defineStore('editor', () => {
     }
     return cloned
   }
+  //创建新组件
+  const createNewComponent = (parentId: string, type: ComponentType): ComponentSchema => {
+    return {
+      id: generateUniqueId(type),
+      parentId,
+      type,
+      props: {},
+      children: [],
+    }
+  }
 
   //复制组件
-  const copyComponent = (parentId: string, id: string, create: boolean) => {
+  const copyComponent = (parentId: string, id: string, create?: boolean) => {
     const components = currentPage.value?.components || new Map()
     const children = currentPage.value?.children || new Map()
     //当前被复制的原节点
@@ -175,6 +185,7 @@ export const useEditorStore = defineStore('editor', () => {
     findChildrenNodesById,
     addComponent,
     deleteComponent,
+    createNewComponent,
     copyComponent,
     cutComponent,
     updateComponentById,

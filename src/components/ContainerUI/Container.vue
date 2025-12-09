@@ -10,7 +10,14 @@
     @click.stop="clickRef"
   >
     <template v-if="children && children.length > 0">
-      <component :is="get(com.type)" v-for="com in children" :key="com.id" :data="com"></component>
+      <component
+        :is="get(com.type)"
+        v-for="com in children"
+        :key="com.id"
+        :data="com"
+        @dragover.prevent.stop="handleDragover(com.id)"
+        @drop.stop="handleDropEvt(com.id)"
+      ></component>
     </template>
     <div v-else class="empty-placeholder min-h-16 flex justify-center items-center text-zinc-500">
       拖拽组件或模版到这里
@@ -24,10 +31,12 @@ import { useEventBus } from '@/composables/useEventBus'
 import { useEditorStore } from '@/stores/editorStore'
 import { componentRegistry } from '@/infra/registry/componentRegistry'
 import { ComponentSchema } from '@/domain/schema/component'
+import { useDragStore } from '@/stores/dragStore'
 const { get } = componentRegistry
 const editorStore = useEditorStore()
-const { currentPageId, project, currentPage } = storeToRefs(editorStore)
+const { currentPage } = storeToRefs(editorStore)
 const { cutComponent } = editorStore
+const { handleDropEvt, handleDragover } = useDragStore()
 const props = defineProps<{
   data: ComponentSchema
 }>()
@@ -68,7 +77,6 @@ eventBus.on('cutContainer', (args: any) => {
     const parentDirect = props.data.props.parentDirect || 'column'
     const type = direct === parentDirect ? 'sibling' : 'children'
     cutComponent(pid, cid, direct, type)
-    console.log(currentPage)
     if (type === 'children') {
       flexDirect.value = direct
     }

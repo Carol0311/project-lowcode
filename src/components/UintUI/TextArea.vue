@@ -66,9 +66,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { Component } from 'vue'
 import { computed } from 'vue'
 import { PhXCircle, PhQuestion, PhAsterisk, PhGear } from '@phosphor-icons/vue'
+import { Info } from '@/components/UintUI/index'
 import { useUiConfig } from '@/composables/useUiConfig'
 import { vDialog, vFocus } from '@/plugins/CusDirectives'
 import { ComponentSchema } from '@/domain/schema/component'

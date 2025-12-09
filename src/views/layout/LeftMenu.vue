@@ -2,18 +2,18 @@
   <div class="lowcode-left relative">
     <div class="menu-list w-12 h-full bg-white">
       <div class="menu">
-        <PhTreeView :size="20" weight="thin" v-dialog:[domTree]="text" />
+        <PhTreeView v-dialog:[domTree]="text" :size="20" weight="thin" />
       </div>
       <div class="menu" @click="() => (showDetl = true)">
-        <PhPuzzlePiece :size="20" weight="thin" v-dialog:[comTree]="text2" />
+        <PhPuzzlePiece v-dialog:[comTree]="text2" :size="20" weight="thin" />
       </div>
     </div>
     <Transition name="panel">
       <div
         v-show="showDetl"
-        @click="() => (showDetl = !showDetl)"
         :class="{ show: showDetl }"
         class="flex flex-col menu-detl-panel w-80 absolute top-0 text-gray-500 left-12 h-full bg-white border-l border-solid border-zinc-300 shadow-md"
+        @click="() => (showDetl = !showDetl)"
       >
         <div class="flex flex-row justify-between items-center px-4 h-12">
           <span>组件库</span>
@@ -48,10 +48,10 @@
           </div>
         </div>
         <div
-          class="flex-1 overflow-auto"
           v-for="group in comGroup"
-          :key="group.id"
           v-show="group.id === activeTab"
+          :key="group.id"
+          class="flex-1 overflow-auto"
         >
           <div v-for="(item, index) of group.children" :key="index">
             <div v-show="item.show">
@@ -60,9 +60,9 @@
               >
                 <span>{{ item.name }}</span>
                 <PhCaretDown
+                  v-if="!item.open"
                   :size="16"
                   weight="thin"
-                  v-if="!item.open"
                   @click.stop="
                     () => {
                       item.open = !item.open
@@ -70,9 +70,9 @@
                   "
                 />
                 <PhCaretUp
+                  v-if="item.open"
                   :size="16"
                   weight="thin"
-                  v-if="item.open"
                   @click.stop="() => (item.open = !item.open)"
                 />
               </div>
@@ -82,18 +82,14 @@
                 style="grid-template-columns: repeat(3, minmax(0, 1fr))"
               >
                 <div
-                  class="ui-item flex flex-col items-center justify-between border-l border-b border-solid border-zinc-300 p-3.5 h-28"
                   v-for="(child, cindex) of item.children"
                   v-show="child.show"
                   :key="cindex"
+                  class="ui-item flex flex-col items-center justify-between border-l border-b border-solid border-zinc-300 p-3.5 h-28"
+                  :draggable="true"
+                  @dragstart="handleDragStart(child.type)"
                 >
-                  <component
-                    :is="child.icon"
-                    :size="36"
-                    weight="light"
-                    :dragable="true"
-                    @dragStart="dragStart"
-                  />
+                  <component :is="child.icon" :size="36" weight="light" />
                   <span>{{ child.name }}</span>
                 </div>
               </div>
@@ -117,6 +113,8 @@ import {
   PhCaretUp,
 } from '@phosphor-icons/vue'
 import tabDatas from './LeftMenu'
+import { useDragStore } from '@/stores/dragStore'
+const { handleDragStart } = useDragStore()
 const { tabs, comGroup } = tabDatas
 const text = ref('大纲树')
 const text2 = ref('组件库')
@@ -147,7 +145,9 @@ const searchEvt = function (e: any) {
   })
 }
 //拖拽事件
-const dragStart = () => {}
+const dragStart = (e) => {
+  console.log(e)
+}
 </script>
 <style scoped>
 .menu-list {

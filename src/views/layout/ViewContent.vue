@@ -5,7 +5,8 @@
       v-for="com in components || []"
       :key="com.id"
       :data="com"
-      @drop="dropEvt"
+      @dragover.prevent.stop="handleDragover(com.id)"
+      @drop.stop="handleDropEvt(com.id)"
     />
     <Edit v-show="showTool" @show-edit="(arg) => (showTool = arg)" />
   </div>
@@ -19,9 +20,11 @@ import { ComponentSchema } from '@/domain/schema/component'
 import { Edit } from '@/components/ToolUI/index'
 import { useEditorStore } from '@/stores/editorStore'
 import { PageSchema } from '@/domain/schema/page'
+import { useDragStore } from '@/stores/dragStore'
 const { get } = componentRegistry
 const editorStore = useEditorStore()
 const { setPage } = editorStore
+const { handleDropEvt, handleDragover } = useDragStore()
 const defaultComponent = <ComponentSchema>{
   id: 'Container_1',
   parentId: 'viewRef',
@@ -83,6 +86,5 @@ onUnmounted(() => {
   eventBus.off('scroll-root')
   eventBus.off('select-tab')
 })
-const dropEvt = () => {}
 </script>
 <style scoped></style>
