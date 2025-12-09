@@ -7,7 +7,7 @@
           :class="{ 'flex-row': data.props.direct === 0, 'flex-col': data.props.direct === 1 }"
         >
           <div
-            v-for="(tab, i) in data.children"
+            v-for="(tab, i) in children"
             :key="i"
             class="item px-4 h-6 leading-6 cursor-pointer z-10"
             :class="{ 'text-orange-300': active === i }"
@@ -24,8 +24,8 @@
     </div>
     <div>
       <component
-        :is="child.type"
-        v-for="child in data.children"
+        :is="get(child.type)"
+        v-for="child in children"
         :key="child.id"
         class="smart-tab"
         :data="child"
@@ -34,27 +34,25 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { Component } from 'vue'
-import { ref, useTemplateRef, onMounted, onUnmounted } from 'vue'
+import { ref, useTemplateRef, onMounted, onUnmounted, computed } from 'vue'
 import { useEventBus } from '@/composables/useEventBus'
 import { useEditorStore } from '@/stores/editorStore'
+import { componentRegistry } from '@/infra/registry/componentRegistry'
+import { ComponentSchema } from '@/domain/schema/component'
+const { get } = componentRegistry
 const editorStore = useEditorStore()
-const { deleteComponent } = editorStore
-interface ComponentNode {
-  id: string
-  parent: string
-  type: Component
-  props: Record<string, any>
-  children?: ComponentNode[]
-}
+const { currentPage, deleteComponent } = editorStore
+const props = defineProps<{
+  data: ComponentSchema
+}>()
+const children = computed(() => {
+  return props.data.children.map((id) => currentPage.components.get(id))
+})
 const eventBus = useEventBus()
 const anchorGroup = useTemplateRef<HTMLElement>('anchorGroup')
 const active = ref(0)
 const tabsTop: number[] = []
 const anchorsList: number[][] = []
-const props = defineProps<{
-  data: ComponentNode
-}>()
 const anchorStyle = ref<{
   width?: string
   height?: string

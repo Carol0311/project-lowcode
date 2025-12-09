@@ -1,23 +1,20 @@
-import type { Component } from 'vue'
 import { defineStore } from 'pinia'
-import { ref, reactive, computed, markRaw } from 'vue'
-import { deepClone, generateUniqueId, getComponentName } from '@/utils/index'
-//组件类型声明
-interface ComponentNode {
-  id: string
-  parent: string
-  type: Component
-  props: Record<string, any>
-  children?: ComponentNode[]
-}
-//页面类型声明
-interface PageConfig {
-  id: string
-  components: ComponentNode[]
-}
+import { ref, reactive, computed } from 'vue'
+import { deepClone, generateUniqueId } from '@/utils/index'
+import { ComponentSchema } from '@/domain/schema/component'
+import { ProjectSchema } from '@/domain/schema/project'
+import { PageSchema } from '@/domain/schema/page'
+
 export const useEditorStore = defineStore('editor', () => {
   //所有页面
-  const pages = reactive<Record<string, PageConfig>>({})
+  const project = reactive<Omit<ProjectSchema, 'pages'>>({
+    id: 'lowcode',
+    name: '智能商品档案--低代码平台',
+    homePageId: 'appPage',
+  })
+
+  //所有页面
+  const pages = reactive<Record<string, PageSchema>>({})
 
   //当前页面Id
   const currentPageId = ref<string>('')
@@ -26,18 +23,33 @@ export const useEditorStore = defineStore('editor', () => {
   const currentPage = computed(() => pages[currentPageId.value])
 
   //当前选中的组件
-  const selectedComponent = ref<ComponentNode | null>(null)
+  const selectedComponent = ref<ComponentSchema | null>(null)
+
+  //添加页面
+  const setPage = (pageId: string, page: PageSchema) => {
+    pages[pageId] = page
+  }
+
+  //获取项目
+  const getProject = computed(() => {
+    return { ...project, pages: pages.value }
+  })
 
   //根据id查找组件
-  const findComponentById = (id: string, nodes?: ComponentNode[]): ComponentNode | null => {
-    const searchNodes = nodes || currentPage.value?.components || []
-    for (const node of searchNodes) {
-      if (node.id === id) return node
-      if (node.children) {
-        //递归查找
-        const found = findComponentById(id, node.children)
-        if (found) return found
-      }
+  const findComponentById = (id: string): ComponentSchema | null => {
+    const components = currentPage.value?.components || {}
+    if (components.hasOwnProperty(id)) {
+      return components[id]
+    }
+    return null
+  }
+  //根据id查其对应的子节点
+  const findChildrenNodesById = (id: string): ComponentSchema[] | null => {
+    const components = currentPage.value?.components || {}
+    const children = currentPage.value?.children || {}
+    if (children.hasOwnProperty(id)) {
+      const childrenIds = children[id] || []
+      return childrenIds.map((childId) => components[childId])
     }
     return null
   }
@@ -49,85 +61,119 @@ export const useEditorStore = defineStore('editor', () => {
     }
   }
   //增加组件
-  const addComponentById = (parentId: string | null, component: ComponentNode) => {
+  const addComponent = (id: string, parentId: string | null, component: ComponentSchema) => {
+    const components = currentPage.value?.components || new Map()
+    //新节点加入id-->节点映射
+    components[id] = component
+
     if (parentId) {
-      const parent = findComponentById(parentId)
-      parent?.children?.push(component)
-    } else {
-      currentPage.value.components.push(component)
+      const children = currentPage.value?.children || new Map()
+      //新节点加入id--->childrenIds映射
+      const ids = children[parentId] || []
+      if (ids.indexOf(id) > -1) {
+        ids.push(id)
+      }
+      children[parentId] = ids
     }
   }
-  //删除指定位置的组件
+  //删除指定组件
   const deleteComponent = (parentId: string, id: string) => {
-    const parent = findComponentById(parentId)
-    const index = parent?.children?.findIndex((child) => child.id === id)
-    if (index !== undefined && index !== -1) {
-      parent?.children?.splice(index, 1)
+    const components = currentPage.value?.components || new Map()
+    const children = currentPage.value?.children || new Map()
+    const deleteRelative = (cid: string) => {
+      const childrens = children[cid] || []
+      childrens.forEach((childId) => deleteRelative(childId))
+      //删除cid所在的节点映射
+      delete components[cid]
+      //删除cid所在的路径映射
+      delete children[cid]
+    }
+    //删除目标节点相关的所有节点映射和路径映射
+    deleteRelative(id)
+    //从目标节点的父节点中删除相关数据
+    if (parentId) {
+      const siblings = children[parentId]
+      if (siblings) {
+        const index = siblings.indexOf(id)
+        if (index > -1) {
+          siblings.splice(index, 1)
+        }
+      }
     }
   }
   //组件深拷贝
-  const deepCloneComponent = (node: ComponentNode, self?: boolean): ComponentNode => {
-    const name = getComponentName(node.type as Component)
-    const cloned: ComponentNode = {
-      id: generateUniqueId(name),
-      parent: self ? node.id : node.parent,
-      type: markRaw(node.type as Component),
-      props: deepClone(node.props), //属性深拷贝
-      children: node.children ? node.children.map((child) => deepCloneComponent(child)) : undefined,
+  const deepCloneComponent = (
+    node: ComponentSchema,
+    self?: boolean,
+    empty?: boolean,
+  ): ComponentSchema => {
+    const cloned: ComponentSchema = {
+      id: generateUniqueId(node.type),
+      parentId: self ? node.id : node.parentId,
+      type: node.type,
+      props: deepClone(node.props),
+      children: empty ? [] : node.children,
     }
     return cloned
   }
 
   //复制组件
-  const copyComponent = (parentId: string, id: string) => {
+  const copyComponent = (parentId: string, id: string, create: boolean) => {
+    const components = currentPage.value?.components || new Map()
+    const children = currentPage.value?.children || new Map()
+    //当前被复制的原节点
+    const current = findComponentById(id)
+    //原节点在id--->childrenIds映射中的顺序
+    const ids = children[parentId] || []
+    const index = ids.indexOf(id)
+    //原节点在父容器children中的顺序
     const parent = findComponentById(parentId)
-    if (parent) {
-      const index = parent.children?.findIndex((child) => child.id === id)
-      if (index !== undefined && index !== -1) {
-        const child = parent.children?.[index]
-        if (child) {
-          const item = deepCloneComponent(child)
-          item.props.parentDirect = parent.props.flexDirect
-          parent.children?.splice(index, 0, item)
-        }
-      }
-    } else {
-      //页面根节点插入组件
-      const root = currentPage.value?.components
-      const current = findComponentById(id)
-      if (current) {
-        const item = deepCloneComponent(current)
-        root.push(item)
-      }
-    }
+    const childIds = parent?.children || []
+    const childIndex = childIds.indexOf(id)
+    //复制生成新节点
+    const item = deepCloneComponent(current, false, create)
+    //新节点id插入父容器children中
+    parent?.children.splice(childIndex + 1, 0, item.id)
+    //新节点加入id-->节点映射
+    components[item.id] = item
+    ////新节点插入对应位置的id--->childrenIds映射
+    ids.splice(index + 1, 0, item.id)
   }
   //插入组件
   const cutComponent = (parentId: string, id: string, direct: string, type: string) => {
+    const components = currentPage.value?.components || new Map()
+    const children = currentPage.value?.children || new Map()
     if (type === 'sibling') {
       //为当前组件添加一个相邻组件
-      copyComponent(parentId, id)
+      copyComponent(parentId, id, true)
     } else if (type === 'children') {
       //为当前组件添加两个子组件
       const current = findComponentById(id)
-      if (current) {
-        if (!current.children) {
-          current.children = []
-        }
-        const item1 = deepCloneComponent(current, true)
-        const item2 = deepCloneComponent(item1)
-        item1.props.parentDirect = direct
-        item2.props.parentDirect = direct
-        current.children.push(...[item1, item2])
-      }
+      //新生成的子组件1，子组件2
+      const item1 = deepCloneComponent(current, true, true)
+      const item2 = deepCloneComponent(current, true, true)
+      item1.props.parentDirect = direct
+      item2.props.parentDirect = direct
+      //子组件id加入父组件children中
+      current.children.push(...[item1.id, item2.id])
+      //子组件加入节点映射
+      components[item1.id] = item1
+      components[item2.id] = item2
+      //子组件加入id-->childrenIds映射
+      const ids = children[id] || []
+      ids.push(...[item1.id, item2.id])
+      children[id] = ids
     }
   }
   return {
-    pages,
+    project: getProject,
     currentPageId,
     currentPage,
     selectedComponent,
+    setPage,
     findComponentById,
-    addComponentById,
+    findChildrenNodesById,
+    addComponent,
     deleteComponent,
     copyComponent,
     cutComponent,

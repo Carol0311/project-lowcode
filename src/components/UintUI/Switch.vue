@@ -59,15 +59,9 @@ import { Info } from '@/components/UintUI'
 import { useUiConfig } from '@/composables/useUiConfig'
 import { vDialog } from '@/plugins/CusDirectives'
 const dynamicIcon = PhToggleRight
-interface ComponentNode {
-  id: string
-  parent: string
-  type: Component
-  props: Record<string, any>
-  children?: ComponentNode[]
-}
+import { ComponentSchema } from '@/domain/schema/component'
 const props = defineProps<{
-  data: ComponentNode
+  data: ComponentSchema
 }>()
 const ui = useUiConfig({
   id: props.data.id,

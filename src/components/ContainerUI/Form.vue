@@ -18,7 +18,7 @@
             class="grid gap-4"
             :style="`grid-template-columns: repeat(${config.tabLayout}, minmax(0, 1fr));`"
           >
-            <component :is="com.type" v-for="com in data.children" :key="com.id" :data="com" />
+            <component :is="get(com.type)" v-for="com in children" :key="com.id" :data="com" />
           </div>
         </div>
       </div>
@@ -39,19 +39,18 @@ import { ref, useTemplateRef, onMounted } from 'vue'
 import { PhCaretDown, PhCaretUp } from '@phosphor-icons/vue'
 import { useEventBus } from '@/composables/useEventBus'
 import { useEditorStore } from '@/stores/editorStore'
+import { componentRegistry } from '@/infra/registry/componentRegistry'
+import { ComponentSchema } from '@/domain/schema/component'
+const { get } = componentRegistry
 const editorStore = useEditorStore()
-const { deleteComponent, copyComponent } = editorStore
 const eventBus = useEventBus()
-interface ComponentNode {
-  id: string
-  parent: string
-  type: Component
-  props: Record<string, any>
-  children?: ComponentNode[]
-}
+const { currentPage, deleteComponent, copyComponent } = editorStore
 const props = defineProps<{
-  data: ComponentNode
+  data: ComponentSchema
 }>()
+const children = computed(() => {
+  return props.data.children.map((id) => currentPage.components.get(id))
+})
 /**展开收起功能*/
 const fold = ref(true)
 const direct = ref('展开')
@@ -76,7 +75,7 @@ const clickRef = (e: Event) => {
   const target = e.currentTarget as HTMLElement
   const pos = target.getBoundingClientRect()
   eventBus.emit('updateToolPos', {
-    parent: props.data.parent,
+    parent: props.data.parentId,
     cid: props.data.id,
     left: pos.left,
     top: pos.top,

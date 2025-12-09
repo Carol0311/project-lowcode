@@ -74,15 +74,9 @@ import { PhPlus, PhMinus, PhQuestion, PhAsterisk } from '@phosphor-icons/vue'
 import { useUiConfig } from '@/composables/useUiConfig'
 import { Info } from '@/components/UintUI'
 import { vDialog, vFocus } from '@/plugins/CusDirectives'
-interface ComponentNode {
-  id: string
-  parent: string
-  type: Component
-  props: Record<string, any>
-  children?: ComponentNode[]
-}
+import { ComponentSchema } from '@/domain/schema/component'
 const props = defineProps<{
-  data: ComponentNode
+  data: ComponentSchema
 }>()
 const ui = useUiConfig({
   id: props.data.id,

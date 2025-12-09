@@ -2,15 +2,15 @@
   <div
     :class="{
       [commonClass]: true,
-      border: data.children && data.children?.length < 1,
+      border: children && children?.length < 1,
       'flex-col': flexDirect === 'column',
       'flex-row': flexDirect === 'row',
     }"
     :data-id="data.id"
     @click.stop="clickRef"
   >
-    <template v-if="data.children && data.children.length > 0">
-      <component :is="com.type" v-for="com in data.children" :key="com.id" :data="com"></component>
+    <template v-if="children && children.length > 0">
+      <component :is="get(com.type)" v-for="com in children" :key="com.id" :data="com"></component>
     </template>
     <div v-else class="empty-placeholder min-h-16 flex justify-center items-center text-zinc-500">
       拖拽组件或模版到这里
@@ -18,21 +18,20 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, type Component } from 'vue'
+import { storeToRefs } from 'pinia'
+import { ref, watch } from 'vue'
 import { useEventBus } from '@/composables/useEventBus'
 import { useEditorStore } from '@/stores/editorStore'
+import { componentRegistry } from '@/infra/registry/componentRegistry'
+import { ComponentSchema } from '@/domain/schema/component'
+const { get } = componentRegistry
 const editorStore = useEditorStore()
+const { currentPageId, project, currentPage } = storeToRefs(editorStore)
 const { cutComponent } = editorStore
-interface ComponentNode {
-  id: string
-  parent: string
-  type: Component
-  props: Record<string, any>
-  children?: ComponentNode[]
-}
 const props = defineProps<{
-  data: ComponentNode
+  data: ComponentSchema
 }>()
+const children = ref([])
 const flexDirect = ref(props.data.props.flexDirect)
 const eventBus = useEventBus()
 const commonClass = 'small-container flex flex-1 border-dotted border-zinc-300 justify-start'
@@ -41,7 +40,7 @@ const clickRef = (e: Event) => {
   const pos = target.getBoundingClientRect()
   eventBus.emit('updateToolPos', {
     isContainer: true,
-    parent: props.data.parent,
+    parent: props.data.parentId,
     cid: props.data.id,
     left: pos.left,
     top: pos.top,
@@ -50,6 +49,15 @@ const clickRef = (e: Event) => {
   })
   eventBus.emit('initEditingProps', { ...props.data.props, isForm: true, cid: props.data.id })
 }
+watch(
+  () => currentPage && currentPage.value && currentPage.value.components,
+  (components, oldVal) => {
+    if (components) {
+      children.value = props.data.children.map((id) => components[id])
+    }
+  },
+  { deep: true },
+)
 eventBus.on('cutContainer', (args: any) => {
   //direct与父容器中的flex-direction方向相同则为自身增加一个相邻组件
   //direct与父容器中的flex-direction方向相反则为自身增加两个子组件
@@ -60,6 +68,7 @@ eventBus.on('cutContainer', (args: any) => {
     const parentDirect = props.data.props.parentDirect || 'column'
     const type = direct === parentDirect ? 'sibling' : 'children'
     cutComponent(pid, cid, direct, type)
+    console.log(currentPage)
     if (type === 'children') {
       flexDirect.value = direct
     }

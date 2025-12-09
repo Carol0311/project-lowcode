@@ -1,5 +1,5 @@
 <template>
-  <div class="lowcode-plat smart-app flex flex-col bg-gray-100" ref="appPage">
+  <div ref="appPage" class="lowcode-plat smart-app flex flex-col bg-gray-100">
     <AppHeader class="lowcode-header" />
     <div class="lowcode-container smart-container flex flex-row">
       <LeftMenu />

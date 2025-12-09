@@ -1,119 +1,49 @@
 <template>
   <div ref="viewRef" class="overflow-auto p-3 relative">
     <component
-      v-for="com in currentPage?.components || []"
+      :is="get(com.type)"
+      v-for="com in components || []"
       :key="com.id"
-      :is="com.type"
       :data="com"
       @drop="dropEvt"
     />
-    <Edit @show-edit="(arg) => (showTool = arg)" v-show="showTool" />
+    <Edit v-show="showTool" @show-edit="(arg) => (showTool = arg)" />
   </div>
 </template>
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
-import { ref, watch, onUnmounted, onMounted } from 'vue'
+import { ref, watch, onUnmounted, onMounted, computed } from 'vue'
 import { useEventBus } from '@/composables/useEventBus'
 import { useScrollPosition } from '@/composables/useScrollPosition'
-import { useDynComponent } from '@/composables/useDynComponent'
-/**import EvelatorForm from '@/components/ContainerUI/EvelatorForm.vue'
-import Container from '@/components/ContainerUI/Container.vue'
-import { Text } from '@/components/UintUI'
-import Form from '@/components/ContainerUI/Form.vue'*/
-import Edit from '@/components/ToolUI/Edit.vue'
+import { componentRegistry } from '@/infra/registry/componentRegistry'
+import { ComponentSchema } from '@/domain/schema/component'
+import { Edit } from '@/components/ToolUI/index'
 import { useEditorStore } from '@/stores/editorStore'
+import { PageSchema } from '@/domain/schema/page'
+const { get } = componentRegistry
 const editorStore = useEditorStore()
-const { currentPage } = storeToRefs(editorStore)
-const dynComponent = useDynComponent()
-const { getComponent } = dynComponent
+const { setPage } = editorStore
+const defaultComponent = <ComponentSchema>{
+  id: 'Container_1',
+  parentId: 'viewRef',
+  type: 'Container',
+  props: {
+    flexDirect: 'column',
+  },
+  children: [],
+}
+const page = <PageSchema>{
+  id: 'viewRef',
+  name: '',
+  rootComponentIds: ['Container_1'],
+  components: { Container_1: defaultComponent },
+  children: {},
+}
 onMounted(() => {
-  editorStore.currentPageId = 'viewDemo'
-  editorStore.pages['viewDemo'] = {
-    id: 'viewRef',
-    components: [
-      {
-        id: 'Container_1',
-        parent: 'viewRef',
-        type: getComponent('Container'),
-        props: {
-          flexDirect: 'column',
-        },
-        children: [],
-      },
-    ],
-  }
-  /**editorStore.pages['viewDemo'] = {
-    id: 'viewRef',
-    components: [
-      {
-        id: 'EvelatorForm_1',
-        parent: 'viewRef',
-        type: markRaw(EvelatorForm),
-        props: {
-          direct: 0,
-          showAnchor: true,
-        },
-        children: [
-          {
-            id: 'Form_1',
-            parent: 'EvelatorForm_1',
-            type: markRaw(Form),
-            props: {
-              tabTitle: 'tab1',
-            },
-            children: [
-              { id: 'Text_1', parent: 'Form_1', type: markRaw(Text), props: {} },
-              { id: 'Text_2', parent: 'Form_1', type: markRaw(Text), props: {} },
-              { id: 'Text_3', parent: 'Form_1', type: markRaw(Text), props: {} },
-              { id: 'Text_4', parent: 'Form_1', type: markRaw(Text), props: {} },
-            ],
-          },
-          {
-            id: 'Form_2',
-            parent: 'EvelatorForm_1',
-            type: markRaw(Form),
-            props: {
-              tabTitle: 'tab2',
-            },
-            children: [
-              { id: 'Text_5', parent: 'Form_2', type: markRaw(Text), props: {} },
-              { id: 'Text_6', parent: 'Form_2', type: markRaw(Text), props: {} },
-              { id: 'Text_7', parent: 'Form_2', type: markRaw(Text), props: {} },
-              { id: 'Text_8', parent: 'Form_2', type: markRaw(Text), props: {} },
-            ],
-          },
-          {
-            id: 'Form_3',
-            parent: 'EvelatorForm_1',
-            type: markRaw(Form),
-            props: {
-              tabTitle: 'tab3',
-            },
-            children: [
-              { id: 'Text_9', parent: 'Form_3', type: markRaw(Text), props: {} },
-              { id: 'Text_10', parent: 'Form_3', type: markRaw(Text), props: {} },
-              { id: 'Text_11', parent: 'Form_3', type: markRaw(Text), props: {} },
-              { id: 'Text_12', parent: 'Form_3', type: markRaw(Text), props: {} },
-            ],
-          },
-          {
-            id: 'Form_4',
-            parent: 'EvelatorForm_1',
-            type: markRaw(Form),
-            props: {
-              tabTitle: 'tab4',
-            },
-            children: [
-              { id: 'Text_13', parent: 'Form_4', type: markRaw(Text), props: {} },
-              { id: 'Text_14', parent: 'Form_4', type: markRaw(Text), props: {} },
-              { id: 'Text_15', parent: 'Form_4', type: markRaw(Text), props: {} },
-              { id: 'Text_16', parent: 'Form_4', type: markRaw(Text), props: {} },
-            ],
-          },
-        ],
-      },
-    ],
-  }*/
+  editorStore.currentPageId = 'pageDefault'
+  setPage('pageDefault', page)
+})
+const components = computed(() => {
+  return page.rootComponentIds.map((id) => page.components[id])
 })
 const viewRef = ref<HTMLElement>()
 const eventBus = useEventBus()

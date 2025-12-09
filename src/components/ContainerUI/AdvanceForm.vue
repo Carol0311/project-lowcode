@@ -1,19 +1,21 @@
 <template>
   <div>
-    <component :is="com.type" v-for="com in data.children" :key="com.id" />
+    <component :is="get(com.type)" v-for="com in children" :key="com.id" :data="com" />
   </div>
 </template>
 <script lang="ts" setup>
-import { type Component, ref } from 'vue'
-interface ComponentNode {
-  id: string
-  parent: string
-  type: Component
-  props: Record<string, any>
-  children?: ComponentNode[]
-}
+import { computed, ref } from 'vue'
+import { useEditorStore } from '@/stores/editorStore'
+import { componentRegistry } from '@/infra/registry/componentRegistry'
+import { ComponentSchema } from '@/domain/schema/component'
+const { get } = componentRegistry
+const editorStore = useEditorStore()
+const { currentPage } = editorStore
 const props = defineProps<{
-  data: ComponentNode
+  data: ComponentSchema
 }>()
+const children = computed(() => {
+  return props.data.children.map((id) => currentPage.components.get(id))
+})
 </script>
 <style scoped></style>
