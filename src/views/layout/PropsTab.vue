@@ -1,54 +1,54 @@
 <template>
   <div class="props-tab">
-    <FoldAndOpen :data="{ name: '全局配置', open: true }" v-show="propsData.isForm">
-      <PRadio :data="{ name: '状态', list: statusData }" v-model="propsData.tabStatus" />
-      <PRadio :data="{ name: '布局', list: FColData }" v-model="propsData.tabLayout" />
-      <PRadio :data="{ name: '标签位置', list: posData }" v-model="propsData.labelPos" />
+    <FoldAndOpen v-show="propsData.isForm" :data="{ name: '全局配置', open: true }">
+      <PRadio v-model="propsData.tabStatus" :data="{ name: '状态', list: statusData }" />
+      <PRadio v-model="propsData.tabLayout" :data="{ name: '布局', list: FColData }" />
+      <PRadio v-model="propsData.labelPos" :data="{ name: '标签位置', list: posData }" />
     </FoldAndOpen>
-    <FoldAndOpen :data="{ name: '表单项配置', open: true }" v-show="!propsData.isForm">
-      <PText :data="{ name: '表单标识' }" v-model="propsData.id" />
-      <PRadio :data="{ name: '表单项宽度', list: FColData }" v-model="propsData.col" />
-      <PText :data="{ name: '标题' }" v-model="propsData.label" />
+    <FoldAndOpen v-show="!propsData.isForm" :data="{ name: '表单项配置', open: true }">
+      <PText v-model="propsData.id" :data="{ name: '表单标识' }" />
+      <PRadio v-model="propsData.col" :data="{ name: '表单项宽度', list: FColData }" />
+      <PText v-model="propsData.label" :data="{ name: '标题' }" />
       <!--<PSwitch :data="{ name: '开启子表单' }" />-->
-      <PText :data="{ name: '错误提示' }" v-model="propsData.errTip" />
-      <PText :data="{ name: '帮助提示' }" v-model="propsData.helpTip" />
+      <PText v-model="propsData.errTip" :data="{ name: '错误提示' }" />
+      <PText v-model="propsData.helpTip" :data="{ name: '帮助提示' }" />
       <PRadio
+        v-model="propsData.validateStatus"
         :data="{
           name: '校验状态',
           list: validateStatus,
           wrap: true,
         }"
-        v-model="propsData.validateStatus"
       />
-      <PRadio :data="{ name: '尺寸', list: sizeData }" v-model="propsData.size" />
-      <PSwitch :data="{ name: '标题提示' }" v-model="propsData.tip" />
-      <PRadio :data="{ name: '设备', list: deviceData }" v-model="propsData.device" />
-      <PSwitch :data="{ name: '是否必填' }" v-model="propsData.require" />
+      <PRadio v-model="propsData.size" :data="{ name: '尺寸', list: sizeData }" />
+      <PSwitch v-model="propsData.tip" :data="{ name: '标题提示' }" />
+      <PRadio v-model="propsData.device" :data="{ name: '设备', list: deviceData }" />
+      <PSwitch v-model="propsData.require" :data="{ name: '是否必填' }" />
       <!--<PSwitch :data="{ name: '宽度占满' }" />-->
-      <PSwitch :data="{ name: '预览态' }" v-model="propsData.preview" />
-      <PSwitch :data="{ name: '自动校验' }" v-model="propsData.autoValidate" />
+      <PSwitch v-model="propsData.preview" :data="{ name: '预览态' }" />
+      <PSwitch v-model="propsData.autoValidate" :data="{ name: '自动校验' }" />
     </FoldAndOpen>
-    <FoldAndOpen :data="{ name: '组件配置' }" v-show="!propsData.isForm">
+    <FoldAndOpen v-show="!propsData.isForm" :data="{ name: '组件配置' }">
       <!--<PText :data="{ name: '标签文本' }" />-->
-      <PText :data="{ name: '默认值' }" v-model="propsData.defaultVal" />
-      <PText :data="{ name: '输入提示' }" v-model="propsData.placeholder" />
+      <PText v-model="propsData.defaultVal" :data="{ name: '默认值' }" />
+      <PText v-model="propsData.placeholder" :data="{ name: '输入提示' }" />
       <PRadio
-        :data="{ name: '状态', list: validateStatus, wrap: true }"
         v-model="propsData.validateStatus"
+        :data="{ name: '状态', list: validateStatus, wrap: true }"
       />
-      <PRadio :data="{ name: '尺寸', list: sizeData }" v-model="propsData.size" />
+      <PRadio v-model="propsData.size" :data="{ name: '尺寸', list: sizeData }" />
       <PUnit
         :data="{ name: '最大长度', single: true, number: propsData.maxLength }"
         @change="updateValue"
       />
-      <PSwitch :data="{ name: '显示清除' }" v-model="propsData.clear" />
-      <PSwitch :data="{ name: '是否禁用' }" v-model="propsData.disable" />
+      <PSwitch v-model="propsData.clear" :data="{ name: '显示清除' }" />
+      <PSwitch v-model="propsData.disable" :data="{ name: '是否禁用' }" />
       <!--<PSwitch :data="{ name: '展示限制',value:propsData.clear}" />-->
       <!--<PSwitch :data="{ name: '是否截断',value:propsData.clear }" />-->
-      <PSwitch :data="{ name: '是否只读' }" v-model="propsData.readonly" />
-      <PSwitch :data="{ name: '是否Trim' }" v-model="propsData.trim" />
-      <PSwitch :data="{ name: '显示边框' }" v-model="propsData.border" />
-      <PSwitch :data="{ name: '是否聚焦' }" v-model="propsData.focus" />
+      <PSwitch v-model="propsData.readonly" :data="{ name: '是否只读' }" />
+      <PSwitch v-model="propsData.trim" :data="{ name: '是否Trim' }" />
+      <PSwitch v-model="propsData.border" :data="{ name: '显示边框' }" />
+      <PSwitch v-model="propsData.focus" :data="{ name: '是否聚焦' }" />
     </FoldAndOpen>
   </div>
 </template>
