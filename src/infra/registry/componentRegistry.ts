@@ -25,7 +25,12 @@ const registry: Record<ComponentType, Component> = {
 }
 export const componentRegistry = {
   get(type: ComponentType): Component {
-    return registry[type]
+    try {
+      return registry[type]
+    } catch (e) {
+      console.log('找不到目标组件', e)
+      return registry['Container']
+    }
   },
   register(type: ComponentType, component: Component) {
     registry[type] = component
