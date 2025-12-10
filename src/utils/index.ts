@@ -1,4 +1,3 @@
-import type { Component } from 'vue'
 export const deepClone = (arg: any, hash = new WeakMap()) => {
   //待拷贝数据为null/undefined 原值返回
   if (arg === null || arg === undefined) return arg
@@ -21,11 +20,6 @@ export const deepClone = (arg: any, hash = new WeakMap()) => {
     }
     return result
   }
-}
-//获取组件名称
-export const getComponentName = (component: Component): string => {
-  const com = component as any
-  return com.name || com.__name || 'component'
 }
 // 生成组件唯一id的方法
 export const generateUniqueId = (name: string): string => {

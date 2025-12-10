@@ -24,14 +24,20 @@ import { Edit } from '@/components/ToolUI/index'
 import { useEditorStore } from '@/stores/editorStore'
 import { PageSchema } from '@/domain/schema/page'
 import { useDragStore } from '@/stores/dragStore'
+import { generateUniqueId } from '@/utils/index'
 const { get } = componentRegistry
 const editorStore = useEditorStore()
 const { selectedComponent, currentPage } = storeToRefs(editorStore)
 const { setPage } = editorStore
 const { handleDropEvt, handleDragover } = useDragStore()
+//后续通过api请求获取默认页面
+const defaultPageId = generateUniqueId('Page')
+const defaultRootViewId = generateUniqueId('View')
+const defaultRootComId = generateUniqueId('Container')
+
 const defaultComponent = <ComponentSchema>{
-  id: 'Container_1',
-  parentId: 'viewRef',
+  id: defaultRootComId,
+  parentId: defaultRootViewId,
   type: 'Container',
   props: {
     flexDirect: 'column',
@@ -39,15 +45,15 @@ const defaultComponent = <ComponentSchema>{
   children: [],
 }
 const page = <PageSchema>{
-  id: 'viewRef',
-  name: '',
-  rootComponentIds: ['Container_1'],
-  components: { Container_1: defaultComponent },
-  children: { viewRef: ['Container_1'] },
+  id: defaultRootViewId,
+  name: '默认编辑页面',
+  rootComponentIds: [defaultRootComId],
+  components: { [defaultRootComId]: defaultComponent },
+  children: { [defaultRootViewId]: [defaultRootComId] },
 }
 onMounted(() => {
-  editorStore.currentPageId = 'pageDefault'
-  setPage('pageDefault', page)
+  editorStore.currentPageId = defaultPageId
+  setPage(defaultPageId, page)
 })
 const components = ref<ComponentSchema[]>([])
 const clickRef = (com: ComponentSchema) => {
@@ -98,7 +104,6 @@ watch(scrollY, (newY) => {
 onUnmounted(() => {
   eventBus.off('init-related-scroll')
   eventBus.off('scroll-root')
-  eventBus.off('select-tab')
 })
 </script>
 <style scoped></style>
