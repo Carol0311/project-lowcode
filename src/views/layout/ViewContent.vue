@@ -10,12 +10,12 @@
       @dragover.prevent.stop="handleDragover(com.id)"
       @drop.stop="handleDropEvt(com.id)"
     />
-    <Edit v-show="showTool" @show-edit="(arg) => (showTool = arg)" />
+    <Edit v-show="showTool" @show-edit="(arg) => showToolEvt(arg)" />
   </div>
 </template>
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { ref, watch, onUnmounted, onMounted, computed } from 'vue'
+import { ref, watch, onUnmounted, onMounted, computed, useTemplateRef } from 'vue'
 import { useEventBus } from '@/composables/useEventBus'
 import { useScrollPosition } from '@/composables/useScrollPosition'
 import { componentRegistry } from '@/infra/registry/componentRegistry'
@@ -59,18 +59,27 @@ const components = ref<ComponentSchema[]>([])
 const clickRef = (com: ComponentSchema) => {
   selectedComponent.value = com
 }
-const viewRef = ref<HTMLElement>()
+const showToolEvt = (arg: boolean) => {
+  showTool.value = arg
+}
+const viewRef = useTemplateRef('viewRef')
 const eventBus = useEventBus()
 const scrollPosition = useScrollPosition()
 const showTool = ref(false)
 let tabsTop: number[] = []
-eventBus.on('init-related-scroll', (tops: number[]) => {
+const onInitRelated = (tops: number[]) => {
   tabsTop = tops
-})
-eventBus.on('scroll-root', (options: ScrollToOptions) => {
+}
+const onScrollRoot = (options: ScrollToOptions) => {
   if (viewRef.value) {
     viewRef.value.scrollTo({ top: options.top || 0 })
   }
+}
+eventBus.on('init-related-scroll', onInitRelated)
+eventBus.on('scroll-root', onScrollRoot)
+onUnmounted(() => {
+  eventBus.off('init-related-scroll', onInitRelated)
+  eventBus.off('scroll-root', onScrollRoot)
 })
 watch(
   () => currentPage && currentPage.value && currentPage.value.rootComponentIds,
@@ -100,10 +109,6 @@ watch(scrollY, (newY) => {
     i = newY > midValue ? i + 1 : i - 1
     eventBus.emit('select-tab', { active: i })
   }
-})
-onUnmounted(() => {
-  eventBus.off('init-related-scroll')
-  eventBus.off('scroll-root')
 })
 </script>
 <style scoped></style>

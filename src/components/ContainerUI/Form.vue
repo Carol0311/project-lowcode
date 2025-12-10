@@ -1,5 +1,5 @@
 <template>
-  <div ref="FormRef" class="smart-tab border border-solid border-zinc-300 mb-5 rounded bg-white">
+  <div class="smart-tab border border-solid border-zinc-300 mb-5 rounded bg-white">
     <div class="smart-tab-head px-4">
       <div class="smart-tab-head-main mt-2 border-b border-solid border-zinc-300">
         <div class="smart-tab-title pl-2 text-gray-600 text-base relative">
@@ -49,18 +49,16 @@ import { useDragStore } from '@/stores/dragStore'
 const { handleDropEvt, handleDragover } = useDragStore()
 const { get } = componentRegistry
 const editorStore = useEditorStore()
-const { selectedComponent } = storeToRefs(editorStore)
-const { currentPage, deleteComponent, copyComponent } = editorStore
+const { selectedComponent, currentPage } = storeToRefs(editorStore)
 const props = defineProps<{
   data: ComponentSchema
 }>()
 const children = computed(() => {
-  return props.data.children.map((id) => currentPage.components[id])
+  return props.data.children.map((id) => currentPage.value.components[id])
 })
 /**展开收起功能*/
 const fold = ref(true)
 const direct = ref('展开')
-const FormRef = useTemplateRef<HTMLElement>('FormRef')
 const config = computed(() => props.data.props)
 const tabForm = useTemplateRef<HTMLElement>('tabForm')
 const tabFormHeight = ref(100)

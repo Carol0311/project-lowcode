@@ -80,7 +80,7 @@ const clickEvt = function (index: any, e: any) {
   }
   eventBus.emit('scroll-root', { top: tabsTop[index] })
 }
-eventBus.on('select-tab', (options: any) => {
+const onSelectTab = (options: any) => {
   active.value = options.active
   const anchor = anchorsList[options.active] ?? [56, 24]
   anchorStyle.value = {
@@ -88,9 +88,10 @@ eventBus.on('select-tab', (options: any) => {
     height: `${anchor[1]}px`,
     transform: `translateX(${anchor[0] ?? 56 * options.active}px)`,
   }
-})
+}
+eventBus.on('select-tab', onSelectTab)
 onUnmounted(() => {
-  eventBus.off('select-tab')
+  eventBus.off('select-tab', onSelectTab)
 })
 </script>
 <style scoped>
