@@ -88,31 +88,47 @@ export const useEditorStore = defineStore('editor', () => {
       //删除cid所在的路径映射
       delete children[cid]
     }
-    //删除目标节点相关的所有节点映射和路径映射
+    //删除目标组件相关的所有节点映射和路径映射
     deleteRelative(id)
-    //从目标节点的父节点中删除相关数据
-    if (parentId) {
-      const siblings = children[parentId]
-      if (siblings) {
-        const index = siblings.indexOf(id)
-        if (index > -1) {
-          siblings.splice(index, 1)
-        }
+
+    const parent = findComponentById(parentId)
+    if (parent) {
+      const childIds = parent?.children || []
+      const childIndex = childIds.indexOf(id)
+      //从目标组件的父组件children[]中删除相关数据
+      if (childIndex > -1) {
+        parent?.children.splice(childIndex, 1)
       }
+    } else {
+      //说明是根节点，从页面的rootComponentIds中删除
+      const rootIds = currentPage.value?.rootComponentIds || []
+      const rootIndex = rootIds.indexOf(id)
+      rootIds.splice(rootIndex, 1)
     }
   }
   //组件深拷贝
   const deepCloneComponent = (
     node: ComponentSchema,
-    self?: boolean,
+    parentId: string,
     empty?: boolean,
   ): ComponentSchema => {
+    const components = currentPage.value?.components || new Map()
+    const clonedId = generateUniqueId(node.type)
+    const clonedChildren: string[] = []
+    if (!empty && node.children) {
+      node.children.forEach((childId) => {
+        const childNode = findComponentById(childId)
+        const clonedChild = deepCloneComponent(childNode, clonedId, false)
+        components[clonedChild.id] = clonedChild
+        clonedChildren.push(clonedChild.id)
+      })
+    }
     const cloned: ComponentSchema = {
-      id: generateUniqueId(node.type),
-      parentId: self ? node.id : node.parentId,
+      id: clonedId,
+      parentId,
       type: node.type,
       props: deepClone(node.props),
-      children: empty ? [] : node.children,
+      children: clonedChildren,
     }
     return cloned
   }
@@ -133,21 +149,34 @@ export const useEditorStore = defineStore('editor', () => {
     const children = currentPage.value?.children || new Map()
     //当前被复制的原节点
     const current = findComponentById(id)
+    //复制生成新节点
+    const item = deepCloneComponent(current, current.parentId, create)
     //原节点在id--->childrenIds映射中的顺序
     const ids = children[parentId] || []
     const index = ids.indexOf(id)
-    //原节点在父容器children中的顺序
-    const parent = findComponentById(parentId)
-    const childIds = parent?.children || []
-    const childIndex = childIds.indexOf(id)
-    //复制生成新节点
-    const item = deepCloneComponent(current, false, create)
-    //新节点id插入父容器children中
-    parent?.children.splice(childIndex + 1, 0, item.id)
     //新节点加入id-->节点映射
     components[item.id] = item
-    ////新节点插入对应位置的id--->childrenIds映射
+    //新节点插入对应位置的id--->childrenIds映射
     ids.splice(index + 1, 0, item.id)
+    if (item.children.length > 0) {
+      //新节点有子节点，则加入id-->childrenIds映射
+      children[item.id] = item.children
+    }
+
+    //原节点在父容器children中的顺序
+    const parent = findComponentById(parentId)
+    if (parent) {
+      const childIds = parent?.children || []
+      const childIndex = childIds.indexOf(id)
+      //新节点id插入父容器children中
+      parent?.children.splice(childIndex + 1, 0, item.id)
+    } else {
+      //说明是根节点，加入页面的rootComponentIds中
+      const rootIds = currentPage.value?.rootComponentIds || []
+      const rootIndex = rootIds.indexOf(id)
+      rootIds.splice(rootIndex + 1, 0, item.id)
+    }
+    return item
   }
   //插入组件
   const cutComponent = (parentId: string, id: string, direct: string, type: string) => {
@@ -160,8 +189,8 @@ export const useEditorStore = defineStore('editor', () => {
       //为当前组件添加两个子组件
       const current = findComponentById(id)
       //新生成的子组件1，子组件2
-      const item1 = deepCloneComponent(current, true, true)
-      const item2 = deepCloneComponent(current, true, true)
+      const item1 = deepCloneComponent(current, current.id, true)
+      const item2 = deepCloneComponent(current, current.id, true)
       item1.props.parentDirect = direct
       item2.props.parentDirect = direct
       //子组件id加入父组件children中

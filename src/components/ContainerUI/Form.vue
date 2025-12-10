@@ -1,9 +1,5 @@
 <template>
-  <div
-    ref="FormRef"
-    class="smart-tab border border-solid border-zinc-300 mb-5 rounded bg-white"
-    @click.stop="clickRef"
-  >
+  <div ref="FormRef" class="smart-tab border border-solid border-zinc-300 mb-5 rounded bg-white">
     <div class="smart-tab-head px-4">
       <div class="smart-tab-head-main mt-2 border-b border-solid border-zinc-300">
         <div class="smart-tab-title pl-2 text-gray-600 text-base relative">
@@ -18,7 +14,16 @@
             class="grid gap-4"
             :style="`grid-template-columns: repeat(${config.tabLayout}, minmax(0, 1fr));`"
           >
-            <component :is="get(com.type)" v-for="com in children" :key="com.id" :data="com" />
+            <component
+              :is="get(com.type)"
+              v-for="com in children"
+              :key="com.id"
+              :data="com"
+              :data-id="com.id"
+              @click.stop="clickRef(com)"
+              @dragover.prevent.stop="handleDragover(com.id)"
+              @drop.stop="handleDropEvt(com.id)"
+            />
           </div>
         </div>
       </div>
@@ -33,7 +38,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { Component } from 'vue'
+import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 import { ref, useTemplateRef, onMounted } from 'vue'
 import { PhCaretDown, PhCaretUp } from '@phosphor-icons/vue'
@@ -41,9 +46,12 @@ import { useEventBus } from '@/composables/useEventBus'
 import { useEditorStore } from '@/stores/editorStore'
 import { componentRegistry } from '@/infra/registry/componentRegistry'
 import { ComponentSchema } from '@/domain/schema/component'
+import { useDragStore } from '@/stores/dragStore'
+const { handleDropEvt, handleDragover } = useDragStore()
 const { get } = componentRegistry
 const editorStore = useEditorStore()
 const eventBus = useEventBus()
+const { selectedComponent } = storeToRefs(editorStore)
 const { currentPage, deleteComponent, copyComponent } = editorStore
 const props = defineProps<{
   data: ComponentSchema
@@ -71,34 +79,9 @@ const clickEvt = () => {
     tabFormHeight.value = tabForm.value?.clientHeight || 100
   }
 }
-const clickRef = (e: Event) => {
-  const target = e.currentTarget as HTMLElement
-  const pos = target.getBoundingClientRect()
-  eventBus.emit('updateToolPos', {
-    parent: props.data.parentId,
-    cid: props.data.id,
-    left: pos.left,
-    top: pos.top,
-    width: pos.width,
-    height: pos.height,
-  })
-  eventBus.emit('initEditingProps', { ...props.data.props, isForm: true, cid: props.data.id })
+const clickRef = (com: ComponentSchema) => {
+  selectedComponent.value = com
 }
-eventBus.on('parentSelect', (pid: string) => {
-  if (pid === props.data.id) {
-    FormRef.value?.click()
-  }
-})
-eventBus.on('deleteComponent', (data) => {
-  if (data.pid === props.data.id) {
-    deleteComponent(data.pid, data.cid)
-  }
-})
-eventBus.on('copyComponent', (data) => {
-  if (data.pid === props.data.id) {
-    copyComponent(data.pid, data.cid)
-  }
-})
 </script>
 <style scoped>
 .smart-tab-title::before {

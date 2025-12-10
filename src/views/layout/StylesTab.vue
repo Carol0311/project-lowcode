@@ -8,22 +8,28 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, provide } from 'vue'
+import { ref, provide, watch } from 'vue'
 import { PLayout, PFont, PBackGround, PPos, PBoder } from '@/components/PropUI'
-import { useEventBus } from '@/composables/useEventBus'
 import { useEditorStore } from '@/stores/editorStore'
+import { storeToRefs } from 'pinia'
 const editorStore = useEditorStore()
+const { selectedComponent } = storeToRefs(editorStore)
 const { updateComponentById } = editorStore
-const eventBus = useEventBus()
 const stylesData = ref<Record<string, any>>({})
 const cid = ref<string>('')
-eventBus.on('initEditingProps', (data: Record<string, any>) => {
-  cid.value = data.cid
-  stylesData.value = data.inlineStyle
-})
 const update = () => {
   updateComponentById(cid.value, { inlineStyle: stylesData.value })
 }
 provide('propsChange', { update })
+watch(
+  () => selectedComponent.value,
+  (com) => {
+    if (com) {
+      cid.value = com.props.cid
+      stylesData.value = com.props.inlineStyle
+    }
+  },
+  { immediate: true },
+)
 </script>
 <style scoped></style>

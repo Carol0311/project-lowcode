@@ -6,8 +6,6 @@
       'flex-col': flexDirect === 'column',
       'flex-row': flexDirect === 'row',
     }"
-    :data-id="data.id"
-    @click.stop="clickRef"
   >
     <template v-if="children && children.length > 0">
       <component
@@ -15,6 +13,8 @@
         v-for="com in children"
         :key="com.id"
         :data="com"
+        :data-id="com.id"
+        @click.stop="clickRef(com)"
         @dragover.prevent.stop="handleDragover(com.id)"
         @drop.stop="handleDropEvt(com.id)"
       ></component>
@@ -34,38 +34,30 @@ import { ComponentSchema } from '@/domain/schema/component'
 import { useDragStore } from '@/stores/dragStore'
 const { get } = componentRegistry
 const editorStore = useEditorStore()
-const { currentPage } = storeToRefs(editorStore)
+const { currentPage, selectedComponent } = storeToRefs(editorStore)
 const { cutComponent } = editorStore
 const { handleDropEvt, handleDragover } = useDragStore()
 const props = defineProps<{
   data: ComponentSchema
 }>()
-const children = ref([])
+const children = ref<ComponentSchema[]>([])
 const flexDirect = ref(props.data.props.flexDirect)
 const eventBus = useEventBus()
 const commonClass = 'small-container flex flex-1 border-dotted border-zinc-300 justify-start'
-const clickRef = (e: Event) => {
-  const target = e.currentTarget as HTMLElement
-  const pos = target.getBoundingClientRect()
-  eventBus.emit('updateToolPos', {
-    isContainer: true,
-    parent: props.data.parentId,
-    cid: props.data.id,
-    left: pos.left,
-    top: pos.top,
-    width: pos.width,
-    height: pos.height,
-  })
-  eventBus.emit('initEditingProps', { ...props.data.props, isForm: true, cid: props.data.id })
+const clickRef = (com: ComponentSchema) => {
+  selectedComponent.value = com
 }
 watch(
-  () => currentPage && currentPage.value && currentPage.value.components,
-  (components, oldVal) => {
+  [
+    () => currentPage && currentPage.value && currentPage.value.components,
+    () => props.data.children,
+  ],
+  ([components, childIds]) => {
     if (components) {
-      children.value = props.data.children.map((id) => components[id])
+      children.value = (childIds as string[]).map((id) => components[id])
     }
   },
-  { deep: true },
+  { immediate: true, deep: true },
 )
 eventBus.on('cutContainer', (args: any) => {
   //direct与父容器中的flex-direction方向相同则为自身增加一个相邻组件

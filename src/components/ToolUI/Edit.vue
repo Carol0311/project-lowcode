@@ -2,14 +2,14 @@
   <div class="component-edit-tool fixed pointer-events-none" :style="toolStyle">
     <div class="flex flex-row bg-orange-500 text-white justify-end pointer-events-auto">
       <PhArrowUp :size="16" weight="thin" @click="selectParent" />
-      <PhCopy :size="16" weight="thin" @click="copyComponent" />
-      <PhTrash :size="16" weight="thin" @click="deleteComponent" />
+      <PhCopy :size="16" weight="thin" @click="copyCom" />
+      <PhTrash :size="16" weight="thin" @click="deleteCom" />
     </div>
     <div
       class="rect-box border border-solid border-orange-500 pointer-events-none relative"
       :style="rectStyle"
     >
-      <template v-if="isContainer">
+      <template v-if="showDevider">
         <PhScissors
           :size="24"
           weight="duotone"
@@ -37,81 +37,85 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { storeToRefs } from 'pinia'
+import { ref, onUnmounted, watch } from 'vue'
 import { PhArrowUp, PhCopy, PhTrash, PhScissors } from '@phosphor-icons/vue'
 import { useEventBus } from '@/composables/useEventBus'
+import { useEditorStore } from '@/stores/editorStore'
+const editorStore = useEditorStore()
+const { selectedComponent } = storeToRefs(editorStore)
+const { findComponentById, deleteComponent, copyComponent } = editorStore
 const emit = defineEmits(['showEdit'])
 const toolStyle = ref({})
 const rectStyle = ref({})
 const eventBus = useEventBus()
 const pid = ref('')
 const cid = ref('')
-interface PosItem {
-  isContainer?: boolean
-  parent: string
-  cid: string
-  top: number
-  left: number
-  width: number
-  height: number
-}
 interface DeviderStyle {
   h?: Record<string, any>
   hLine?: Record<string, any>
   v?: Record<string, any>
   vLine?: Record<string, any>
 }
-const isContainer = ref<boolean>(false)
 const showh = ref(false)
 const showv = ref(false)
+//是否显示分割容器图标
 const showDevider = ref(false)
+//分割容器工具图标样式
 const deviderStyle = ref<DeviderStyle>({})
-eventBus.on('updateToolPos', (args: PosItem) => {
-  if (args.hasOwnProperty('isContainer')) {
-    isContainer.value = Boolean(args.isContainer)
-  }
-  pid.value = args.parent
-  cid.value = args.cid
-  toolStyle.value = {
-    top: `${args.top - 16}px`,
-    left: `${args.left}px`,
-  }
-  rectStyle.value = {
-    width: `${args.width}px`,
-    height: `${args.height}px`,
-  }
-  showDevider.value = true
-  deviderStyle.value.h = {
-    left: `${args.width / 2}px`,
-  }
-  deviderStyle.value.hLine = {
-    left: `${args.width / 2}px`,
-    height: `${args.height - 2}px`,
-  }
-  deviderStyle.value.v = {
-    top: `${args.height / 2 - 8}px`,
-  }
-  deviderStyle.value.vLine = {
-    top: `${args.height / 2 - 8}px`,
-    width: `${args.width - 2}px`,
-  }
-  emit('showEdit', true)
-})
-onUnmounted(() => {
-  eventBus.off('updateToolPos')
-})
+const FORM_ARR = ['Container', 'Form', 'AdvanceForm', 'EvelatorForm']
+watch(
+  () => selectedComponent.value,
+  (com) => {
+    if (com) {
+      const target = document.querySelector(`[data-id='${com.id}']`) as HTMLElement
+      if (target) {
+        const pos = target.getBoundingClientRect()
+        showDevider.value = FORM_ARR.includes(com.type) && com.children.length < 1
+        pid.value = com.parentId
+        cid.value = com.id
+        toolStyle.value = {
+          top: `${pos.top - 16}px`,
+          left: `${pos.left}px`,
+        }
+        rectStyle.value = {
+          width: `${pos.width}px`,
+          height: `${pos.height}px`,
+        }
+        deviderStyle.value.h = {
+          left: `${pos.width / 2}px`,
+        }
+        deviderStyle.value.hLine = {
+          left: `${pos.width / 2}px`,
+          height: `${pos.height - 2}px`,
+        }
+        deviderStyle.value.v = {
+          top: `${pos.height / 2 - 8}px`,
+        }
+        deviderStyle.value.vLine = {
+          top: `${pos.height / 2 - 3}px`,
+          width: `${pos.width - 2}px`,
+        }
+        emit('showEdit', true)
+      }
+    }
+  },
+  { immediate: true },
+)
 //选中当前组件的父组件
 const selectParent = () => {
-  eventBus.emit('parentSelect', pid.value)
+  selectedComponent.value = findComponentById(pid.value)
 }
 //删除组件
-const deleteComponent = () => {
-  eventBus.emit('deleteComponent', { pid: pid.value, cid: cid.value })
+const deleteCom = () => {
+  deleteComponent(pid.value, cid.value)
   emit('showEdit', false)
 }
 //复制组件
-const copyComponent = () => {
-  eventBus.emit('copyComponent', { pid: pid.value, cid: cid.value })
+const copyCom = () => {
+  const item = copyComponent(pid.value, cid.value)
+  selectedComponent.value = item
+  emit('showEdit', false)
 }
 //分割容器
 const cutContainer = (direct: string) => {
@@ -151,6 +155,6 @@ const cutContainer = (direct: string) => {
   margin-left: -10px;
 }
 .v-middle.large {
-  margin-top: -3px;
+  margin-top: -5px;
 }
 </style>

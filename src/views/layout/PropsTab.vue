@@ -53,11 +53,13 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, provide } from 'vue'
+import { storeToRefs } from 'pinia'
+import { ref, provide, watch } from 'vue'
 import { PText, PRadio, PSwitch, FoldAndOpen, PUnit } from '@/components/PropUI'
-import { useEventBus } from '@/composables/useEventBus'
 import { useEditorStore } from '@/stores/editorStore'
+const FORM_ARR = ['Container', 'Form', 'AdvanceForm', 'EvelatorForm']
 const editorStore = useEditorStore()
+const { selectedComponent } = storeToRefs(editorStore)
 const { updateComponentById } = editorStore
 interface ListItem {
   name: string
@@ -94,11 +96,7 @@ const posData = ref<ListItem[]>([
   { name: '左', value: 'left' },
   { name: '内', value: 'inner' },
 ])
-const eventBus = useEventBus()
 const propsData = ref<Record<string, any>>({})
-eventBus.on('initEditingProps', (data: Record<string, any>) => {
-  propsData.value = data
-})
 const update = () => {
   updateComponentById(propsData.value.cid, propsData.value)
 }
@@ -106,5 +104,14 @@ provide('propsChange', { update })
 const updateValue = (params: any) => {
   updateComponentById(propsData.value.cid, { maxlength: params.number })
 }
+watch(
+  () => selectedComponent.value,
+  (com) => {
+    if (com) {
+      propsData.value = { ...com.props, isForm: FORM_ARR.includes(com.type), cid: com.id }
+    }
+  },
+  { immediate: true },
+)
 </script>
 <style scoped></style>

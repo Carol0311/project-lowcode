@@ -5,6 +5,8 @@
       v-for="com in components || []"
       :key="com.id"
       :data="com"
+      :data-id="com.id"
+      @click.stop="clickRef(com)"
       @dragover.prevent.stop="handleDragover(com.id)"
       @drop.stop="handleDropEvt(com.id)"
     />
@@ -12,6 +14,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
 import { ref, watch, onUnmounted, onMounted, computed } from 'vue'
 import { useEventBus } from '@/composables/useEventBus'
 import { useScrollPosition } from '@/composables/useScrollPosition'
@@ -23,6 +26,7 @@ import { PageSchema } from '@/domain/schema/page'
 import { useDragStore } from '@/stores/dragStore'
 const { get } = componentRegistry
 const editorStore = useEditorStore()
+const { selectedComponent, currentPage } = storeToRefs(editorStore)
 const { setPage } = editorStore
 const { handleDropEvt, handleDragover } = useDragStore()
 const defaultComponent = <ComponentSchema>{
@@ -39,15 +43,16 @@ const page = <PageSchema>{
   name: '',
   rootComponentIds: ['Container_1'],
   components: { Container_1: defaultComponent },
-  children: {},
+  children: { viewRef: ['Container_1'] },
 }
 onMounted(() => {
   editorStore.currentPageId = 'pageDefault'
   setPage('pageDefault', page)
 })
-const components = computed(() => {
-  return page.rootComponentIds.map((id) => page.components[id])
-})
+const components = ref<ComponentSchema[]>([])
+const clickRef = (com: ComponentSchema) => {
+  selectedComponent.value = com
+}
 const viewRef = ref<HTMLElement>()
 const eventBus = useEventBus()
 const scrollPosition = useScrollPosition()
@@ -61,6 +66,15 @@ eventBus.on('scroll-root', (options: ScrollToOptions) => {
     viewRef.value.scrollTo({ top: options.top || 0 })
   }
 })
+watch(
+  () => currentPage && currentPage.value && currentPage.value.rootComponentIds,
+  (rootIds, old) => {
+    if (rootIds) {
+      components.value = rootIds.map((id) => currentPage.value.components[id])
+    }
+  },
+  { deep: true },
+)
 watch(
   viewRef,
   (newContainer) => {

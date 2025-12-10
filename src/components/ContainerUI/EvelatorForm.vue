@@ -89,11 +89,6 @@ eventBus.on('select-tab', (options: any) => {
     transform: `translateX(${anchor[0] ?? 56 * options.active}px)`,
   }
 })
-eventBus.on('deleteComponent', (data) => {
-  if (data.pid === props.data.id) {
-    deleteComponent(data.pid, data.cid)
-  }
-})
 onUnmounted(() => {
   eventBus.off('init-related-scroll')
   eventBus.off('scroll-root')
