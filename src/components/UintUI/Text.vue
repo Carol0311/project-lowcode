@@ -1,10 +1,5 @@
 <template>
-  <div
-    class="smart-text"
-    :class="[ui.uiStatic.item, item]"
-    :colspan="config.col"
-    @click.stop="ui.uiEvents.click"
-  >
+  <div class="smart-text" :class="[ui.uiStatic.item, item]" :colspan="config.col">
     <div v-if="labelPos !== 'inner'" :class="[ui.uiStatic.outLabel, outLabel]">
       <label>{{ config.label }}</label>
       <PhQuestion
@@ -69,7 +64,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { Component } from 'vue'
 import { computed } from 'vue'
 import { PhXCircle, PhQuestion, PhAsterisk, PhGear } from '@phosphor-icons/vue'
 import { useUiConfig } from '@/composables/useUiConfig'

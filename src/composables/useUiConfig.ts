@@ -1,6 +1,5 @@
 import { reactive, computed, ref } from 'vue'
 import type { ComponentSchema } from '@/domain/schema/component'
-import { useEventBus } from './useEventBus'
 import { useEditorStore } from '@/stores/editorStore'
 /**组件通用设置参数*/
 export interface UiConfig {
@@ -57,7 +56,6 @@ export interface UiState {
 }
 
 export const useUiConfig = (initialConfig: Partial<UiConfig>) => {
-  const eventBus = useEventBus()
   const editorStore = useEditorStore()
   const { findComponentById, updateComponentById } = editorStore
   const parentCom = ref<ComponentSchema>()
@@ -156,24 +154,6 @@ export const useUiConfig = (initialConfig: Partial<UiConfig>) => {
     },
     change: () => {
       //处理trim
-    },
-    click: (e: Event) => {
-      const target = e.currentTarget as HTMLElement
-      const pos = target.getBoundingClientRect()
-      eventBus.emit('updateToolPos', {
-        parent: config.parent,
-        cid: config.cid,
-        left: pos.left,
-        top: pos.top,
-        width: pos.width,
-        height: pos.height,
-      })
-      if (config.cid) {
-        const component = findComponentById(config.cid)
-        eventBus.emit('initEditingProps', component?.props)
-      } else {
-        eventBus.emit('initEditingProps', config)
-      }
     },
   }
 

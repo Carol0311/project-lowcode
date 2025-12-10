@@ -1,5 +1,5 @@
 <template>
-  <div class="smart-number" :class="[ui.uiStatic.item, item]" @click.stop="ui.uiEvents.click">
+  <div class="smart-number" :class="[ui.uiStatic.item, item]">
     <div v-if="labelPos !== 'inner'" :class="[ui.uiStatic.outLabel, outLabel]">
       <label>{{ config.label }}</label>
       <PhQuestion
