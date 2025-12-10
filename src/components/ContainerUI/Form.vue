@@ -42,7 +42,6 @@ import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 import { ref, useTemplateRef, onMounted } from 'vue'
 import { PhCaretDown, PhCaretUp } from '@phosphor-icons/vue'
-import { useEventBus } from '@/composables/useEventBus'
 import { useEditorStore } from '@/stores/editorStore'
 import { componentRegistry } from '@/infra/registry/componentRegistry'
 import { ComponentSchema } from '@/domain/schema/component'
@@ -50,7 +49,6 @@ import { useDragStore } from '@/stores/dragStore'
 const { handleDropEvt, handleDragover } = useDragStore()
 const { get } = componentRegistry
 const editorStore = useEditorStore()
-const eventBus = useEventBus()
 const { selectedComponent } = storeToRefs(editorStore)
 const { currentPage, deleteComponent, copyComponent } = editorStore
 const props = defineProps<{

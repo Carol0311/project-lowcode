@@ -38,17 +38,16 @@
 </template>
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { ref, onUnmounted, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { PhArrowUp, PhCopy, PhTrash, PhScissors } from '@phosphor-icons/vue'
-import { useEventBus } from '@/composables/useEventBus'
 import { useEditorStore } from '@/stores/editorStore'
 const editorStore = useEditorStore()
 const { selectedComponent } = storeToRefs(editorStore)
-const { findComponentById, deleteComponent, copyComponent } = editorStore
+const { findComponentById, deleteComponent, copyComponent, cutComponent, updateComponentById } =
+  editorStore
 const emit = defineEmits(['showEdit'])
 const toolStyle = ref({})
 const rectStyle = ref({})
-const eventBus = useEventBus()
 const pid = ref('')
 const cid = ref('')
 interface DeviderStyle {
@@ -119,7 +118,15 @@ const copyCom = () => {
 }
 //分割容器
 const cutContainer = (direct: string) => {
-  eventBus.emit('cutContainer', { pid: pid.value, cid: cid.value, direct })
+  //direct与父容器中的flex-direction方向相同则为自身增加一个相邻组件
+  //direct与父容器中的flex-direction方向相反则为自身增加两个子组件
+  //同时涉及高度宽度计算
+  const parentDirect = selectedComponent.value.props.parentDirect || 'column'
+  const type = direct === parentDirect ? 'sibling' : 'children'
+  cutComponent(pid.value, cid.value, direct, type)
+  if (type === 'children') {
+    updateComponentById(selectedComponent.value.id, { flexDirect: direct })
+  }
   emit('showEdit', false)
 }
 </script>

@@ -90,8 +90,6 @@ eventBus.on('select-tab', (options: any) => {
   }
 })
 onUnmounted(() => {
-  eventBus.off('init-related-scroll')
-  eventBus.off('scroll-root')
   eventBus.off('select-tab')
 })
 </script>
