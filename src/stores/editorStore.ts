@@ -184,7 +184,7 @@ export const useEditorStore = defineStore('editor', () => {
     const children = currentPage.value?.children || new Map()
     if (type === 'sibling') {
       //为当前组件添加一个相邻组件
-      copyComponent(parentId, id, true)
+      return copyComponent(parentId, id, true)
     } else if (type === 'children') {
       //为当前组件添加两个子组件
       const current = findComponentById(id)
@@ -202,6 +202,7 @@ export const useEditorStore = defineStore('editor', () => {
       const ids = children[id] || []
       ids.push(...[item1.id, item2.id])
       children[id] = ids
+      return item1
     }
   }
   return {

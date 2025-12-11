@@ -123,10 +123,12 @@ const cutContainer = (direct: string) => {
   //同时涉及高度宽度计算
   const parentDirect = selectedComponent.value.props.parentDirect || 'column'
   const type = direct === parentDirect ? 'sibling' : 'children'
-  cutComponent(pid.value, cid.value, direct, type)
+  const item = cutComponent(pid.value, cid.value, direct, type)
   if (type === 'children') {
     updateComponentById(selectedComponent.value.id, { flexDirect: direct })
   }
+  //分割容器后变换选中组件
+  selectedComponent.value = item
   emit('showEdit', false)
 }
 </script>
