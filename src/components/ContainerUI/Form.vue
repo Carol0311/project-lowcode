@@ -54,7 +54,8 @@ const props = defineProps<{
   data: ComponentSchema
 }>()
 const children = computed(() => {
-  return props.data.children.map((id) => currentPage.value.components[id])
+  const components = currentPage.value?.components || {}
+  return props.data.children.map((id) => components[id])
 })
 /**展开收起功能*/
 const fold = ref(true)

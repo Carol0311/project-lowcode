@@ -35,18 +35,20 @@
 </template>
 <script setup lang="ts">
 import { ref, useTemplateRef, onMounted, onUnmounted, computed } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useEventBus } from '@/composables/useEventBus'
 import { useEditorStore } from '@/stores/editorStore'
 import { componentRegistry } from '@/infra/registry/componentRegistry'
 import { ComponentSchema } from '@/domain/schema/component'
 const { get } = componentRegistry
 const editorStore = useEditorStore()
-const { currentPage, deleteComponent } = editorStore
+const { currentPage } = storeToRefs(editorStore)
 const props = defineProps<{
   data: ComponentSchema
 }>()
 const children = computed(() => {
-  return props.data.children.map((id) => currentPage.components[id])
+  const components = currentPage.value?.components || {}
+  return props.data.children.map((id) => components[id])
 })
 const eventBus = useEventBus()
 const anchorGroup = useTemplateRef<HTMLElement>('anchorGroup')

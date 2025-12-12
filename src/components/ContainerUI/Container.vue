@@ -26,7 +26,7 @@
 </template>
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useEditorStore } from '@/stores/editorStore'
 import { componentRegistry } from '@/infra/registry/componentRegistry'
 import { ComponentSchema } from '@/domain/schema/component'
@@ -38,24 +38,23 @@ const { handleDropEvt, handleDragover } = useDragStore()
 const props = defineProps<{
   data: ComponentSchema
 }>()
-const children = ref<ComponentSchema[]>([])
 const flexDirect = ref(props.data.props.flexDirect)
+const children = computed(() => {
+  const components = currentPage.value?.components || {}
+  return props.data.children.map((id) => components[id])
+})
 const commonClass = 'small-container flex flex-1 border-dotted border-zinc-300 justify-start'
 const clickRef = (com: ComponentSchema) => {
   selectedComponent.value = com
 }
 watch(
-  [
-    () => currentPage && currentPage.value && currentPage.value.components,
-    () => props.data.children,
-  ],
-  ([components, childIds]) => {
-    if (components) {
-      children.value = (childIds as string[]).map((id) => components[id])
+  () => selectedComponent,
+  (select) => {
+    if (select) {
       flexDirect.value = props.data.props.flexDirect
     }
   },
-  { immediate: true, deep: true },
+  { deep: true },
 )
 </script>
 <style scoped>

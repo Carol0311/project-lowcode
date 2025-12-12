@@ -1,8 +1,13 @@
 <template>
-  <div ref="viewRef" class="overflow-auto p-3 relative">
+  <div
+    ref="viewRef"
+    class="overflow-auto p-3 relative"
+    @dragover.prevent.stop="handleDragover(defaultRootViewId)"
+    @drop.stop="handleDropEvt(defaultRootViewId)"
+  >
     <component
       :is="get(com.type)"
-      v-for="com in components || []"
+      v-for="com in rootComponents || []"
       :key="com.id"
       :data="com"
       :data-id="com.id"
@@ -19,10 +24,9 @@ import { ref, watch, onUnmounted, onMounted, computed, useTemplateRef } from 'vu
 import { useEventBus } from '@/composables/useEventBus'
 import { useScrollPosition } from '@/composables/useScrollPosition'
 import { componentRegistry } from '@/infra/registry/componentRegistry'
-import { ComponentSchema } from '@/domain/schema/component'
+import { ComponentSchema, PageSchema } from '@/domain/schema/index'
 import { Edit } from '@/components/ToolUI/index'
 import { useEditorStore } from '@/stores/editorStore'
-import { PageSchema } from '@/domain/schema/page'
 import { useDragStore } from '@/stores/dragStore'
 import { generateUniqueId } from '@/utils/index'
 const { get } = componentRegistry
@@ -55,13 +59,21 @@ onMounted(() => {
   editorStore.currentPageId = defaultPageId
   setPage(defaultPageId, page)
 })
-const components = ref<ComponentSchema[]>([])
+//根页面组件
+const rootComponents = computed(() => {
+  const components = currentPage.value?.components || {}
+  const rootIds = currentPage.value?.rootComponentIds || []
+  return rootIds.map((id) => components[id])
+})
+//点击组件选中
 const clickRef = (com: ComponentSchema) => {
   selectedComponent.value = com
 }
+//显示组件编辑工具栏
 const showToolEvt = (arg: boolean) => {
   showTool.value = arg
 }
+//页签选择与页面滚动联动事件处理
 const viewRef = useTemplateRef('viewRef')
 const eventBus = useEventBus()
 const scrollPosition = useScrollPosition()
@@ -81,15 +93,6 @@ onUnmounted(() => {
   eventBus.off('init-related-scroll', onInitRelated)
   eventBus.off('scroll-root', onScrollRoot)
 })
-watch(
-  () => currentPage && currentPage.value && currentPage.value.rootComponentIds,
-  (rootIds, old) => {
-    if (rootIds) {
-      components.value = rootIds.map((id) => currentPage.value.components[id])
-    }
-  },
-  { deep: true },
-)
 watch(
   viewRef,
   (newContainer) => {
