@@ -133,9 +133,10 @@ const model = defineModel<Record<string, any>>({})
 //更新padding margin
 const changeEvt = (e: Event, p: string) => {
   const target = e.target as HTMLInputElement
+  const v = target.value.replace(/px/g, '').trim()
   model.value = {
     ...model.value,
-    [p]: `${target.value}px`,
+    [p]: v.length > 0 ? `${v}px` : 0,
   }
   propsChange?.update()
 }
