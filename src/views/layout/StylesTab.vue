@@ -14,11 +14,11 @@ import { useEditorStore } from '@/stores/editorStore'
 import { storeToRefs } from 'pinia'
 const editorStore = useEditorStore()
 const { selectedComponent } = storeToRefs(editorStore)
-const { updateComponentById } = editorStore
+const { updateComponent } = editorStore
 const stylesData = ref<Record<string, any>>({})
 const cid = ref<string>('')
 const update = () => {
-  updateComponentById(cid.value, { inlineStyle: stylesData.value })
+  updateComponent(cid.value, { inlineStyle: stylesData.value })
 }
 provide('propsChange', { update })
 watch(

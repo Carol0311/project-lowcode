@@ -6,4 +6,5 @@ export interface PageSchema {
   name: string
   rootComponentIds: string[] //页面根节点id
   components: Record<string, ComponentSchema> //存放id-->nodes映射
+  selectId?: string //当前选中组件id
 }

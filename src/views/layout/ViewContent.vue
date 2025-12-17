@@ -11,7 +11,7 @@
       :key="com.id"
       :data="com"
       :data-id="com.id"
-      @click.stop="clickRef(com)"
+      @click.stop="clickRef(com.id)"
       @dragover.prevent.stop="handleDragover(com.id)"
       @drop.stop="handleDropEvt(com.id)"
     />
@@ -21,19 +21,22 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { ref, watch, onUnmounted, onMounted, computed, useTemplateRef } from 'vue'
+import { Edit } from '@/components/ToolUI'
+import { generateUniqueId } from '@/utils/index'
 import { useEventBus } from '@/composables/useEventBus'
+import { ComponentSchema, PageSchema } from '@/domain/schema'
 import { useScrollPosition } from '@/composables/useScrollPosition'
 import { componentRegistry } from '@/infra/registry/componentRegistry'
-import { ComponentSchema, PageSchema } from '@/domain/schema/index'
-import { Edit } from '@/components/ToolUI/index'
-import { useEditorStore } from '@/stores/editorStore'
-import { useDragStore } from '@/stores/dragStore'
-import { generateUniqueId } from '@/utils/index'
+import { useProjectStore, useEditorStore, useDragStore } from '@/stores'
 const { get } = componentRegistry
+const { setProject } = useProjectStore()
+
 const editorStore = useEditorStore()
-const { selectedComponent, currentPage } = storeToRefs(editorStore)
-const { setPage } = editorStore
+const { currentPage } = storeToRefs(editorStore)
+const { setCurrentPage, setSelectedComponent } = editorStore
+
 const { handleDropEvt, handleDragover } = useDragStore()
+
 //后续通过api请求获取默认页面
 const defaultPageId = generateUniqueId('Page')
 const defaultRootViewId = generateUniqueId('View')
@@ -56,8 +59,8 @@ const page = <PageSchema>{
   children: { [defaultRootViewId]: [defaultRootComId] },
 }
 onMounted(() => {
-  editorStore.currentPageId = defaultPageId
-  setPage(defaultPageId, page)
+  setProject(defaultPageId, page)
+  setCurrentPage(defaultPageId, page)
 })
 //根页面组件
 const rootComponents = computed(() => {
@@ -66,10 +69,11 @@ const rootComponents = computed(() => {
   return rootIds.map((id) => components[id])
 })
 //点击组件选中
-const clickRef = (com: ComponentSchema) => {
-  selectedComponent.value = com
+const clickRef = (componentId: string) => {
+  setSelectedComponent(componentId)
 }
 //显示组件编辑工具栏
+const showTool = ref(false)
 const showToolEvt = (arg: boolean) => {
   showTool.value = arg
 }
@@ -77,7 +81,6 @@ const showToolEvt = (arg: boolean) => {
 const viewRef = useTemplateRef('viewRef')
 const eventBus = useEventBus()
 const scrollPosition = useScrollPosition()
-const showTool = ref(false)
 let tabsTop: number[] = []
 const onInitRelated = (tops: number[]) => {
   tabsTop = tops
@@ -105,6 +108,7 @@ watch(
 const { scrollY } = scrollPosition
 watch(scrollY, (newY) => {
   showTool.value = false
+  setSelectedComponent(null)
   let midValue = tabsTop[0] ?? 0
   if (tabsTop.length > 0 && newY > midValue) {
     let i = Math.floor(tabsTop.length / 2)

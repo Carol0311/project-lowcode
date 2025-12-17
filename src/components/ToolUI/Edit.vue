@@ -43,8 +43,9 @@ import { PhArrowUp, PhCopy, PhTrash, PhScissors } from '@phosphor-icons/vue'
 import { useEditorStore } from '@/stores/editorStore'
 const editorStore = useEditorStore()
 const { selectedComponent } = storeToRefs(editorStore)
-const { findComponentById, deleteComponent, copyComponent, cutComponent, updateComponentById } =
+const { setSelectedComponent, cutComponent, deleteComponent, duplicateComponent, updateComponent } =
   editorStore
+
 const emit = defineEmits(['showEdit'])
 const toolStyle = ref({})
 const rectStyle = ref({})
@@ -103,33 +104,29 @@ watch(
 )
 //选中当前组件的父组件
 const selectParent = () => {
-  selectedComponent.value = findComponentById(pid.value)
+  setSelectedComponent(pid.value)
 }
 //删除组件
 const deleteCom = () => {
-  deleteComponent(pid.value, cid.value)
+  deleteComponent(cid.value)
   emit('showEdit', false)
 }
 //复制组件
 const copyCom = () => {
-  const item = copyComponent(pid.value, cid.value)
-  selectedComponent.value = item
-  emit('showEdit', false)
+  duplicateComponent(pid.value, cid.value)
 }
-//分割容器
-const cutContainer = (direct: string) => {
-  //direct与父容器中的flex-direction方向相同则为自身增加一个相邻组件
-  //direct与父容器中的flex-direction方向相反则为自身增加两个子组件
-  //同时涉及高度宽度计算
+/**
+ * 分割容器
+ * direct与父容器中的flex-direction方向相同则为自身增加一个相邻组件
+ * direct与父容器中的flex-direction方向相反则为自身增加两个子组件
+ **/
+const cutContainer = async (direct: string) => {
   const parentDirect = selectedComponent.value.props.parentDirect || 'column'
   const type = direct === parentDirect ? 'sibling' : 'children'
-  const item = cutComponent(pid.value, cid.value, direct, type)
   if (type === 'children') {
-    updateComponentById(selectedComponent.value.id, { flexDirect: direct })
+    await updateComponent(cid.value, { flexDirect: direct })
   }
-  //分割容器后变换选中组件
-  selectedComponent.value = item
-  emit('showEdit', false)
+  cutComponent(pid.value, cid.value, direct, type)
 }
 </script>
 <style scoped>

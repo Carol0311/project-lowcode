@@ -57,7 +57,7 @@ export interface UiState {
 
 export const useUiConfig = (initialConfig: Partial<UiConfig>) => {
   const editorStore = useEditorStore()
-  const { findComponentById, updateComponentById } = editorStore
+  const { findComponentById, updateComponent } = editorStore
   const parentCom = ref<ComponentSchema>()
   const config = reactive<UiConfig>({
     label: '标签标题',
@@ -73,7 +73,7 @@ export const useUiConfig = (initialConfig: Partial<UiConfig>) => {
   //初始化更新每个组件的属性值
   if (config.id) {
     config.cid = config.id
-    updateComponentById(config.cid, config)
+    updateComponent(config.cid, config)
   }
   if (config.parent) {
     parentCom.value = findComponentById(config.parent)

@@ -26,3 +26,11 @@ export const generateUniqueId = (name: string): string => {
   // 采用当前时间戳+随机数的方式生成唯一字符串
   return name + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 9)
 }
+//generateId函数的简单实现
+export const generateId = (): string => {
+  return (
+    'id_' +
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15)
+  )
+}

@@ -10,8 +10,10 @@ import { useEditorStore } from '@/stores/editorStore'
 import { componentRegistry } from '@/infra/registry/componentRegistry'
 import { ComponentSchema } from '@/domain/schema/component'
 const { get } = componentRegistry
+
 const editorStore = useEditorStore()
 const { currentPage } = storeToRefs(editorStore)
+
 const props = defineProps<{
   data: ComponentSchema
 }>()

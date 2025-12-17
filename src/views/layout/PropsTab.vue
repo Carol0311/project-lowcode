@@ -60,7 +60,7 @@ import { useEditorStore } from '@/stores/editorStore'
 const FORM_ARR = ['Container', 'Form', 'AdvanceForm', 'EvelatorForm']
 const editorStore = useEditorStore()
 const { selectedComponent } = storeToRefs(editorStore)
-const { updateComponentById } = editorStore
+const { updateComponent } = editorStore
 interface ListItem {
   name: string
   value: number | string
@@ -98,11 +98,11 @@ const posData = ref<ListItem[]>([
 ])
 const propsData = ref<Record<string, any>>({})
 const update = () => {
-  updateComponentById(propsData.value.cid, propsData.value)
+  updateComponent(propsData.value.cid, propsData.value)
 }
 provide('propsChange', { update })
 const updateValue = (params: any) => {
-  updateComponentById(propsData.value.cid, { maxlength: params.number })
+  updateComponent(propsData.value.cid, { maxlength: params.number })
 }
 watch(
   () => selectedComponent.value,

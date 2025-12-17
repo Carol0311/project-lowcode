@@ -14,7 +14,7 @@
         :key="com.id"
         :data="com"
         :data-id="com.id"
-        @click.stop="clickRef(com)"
+        @click.stop="clickRef(com.id)"
         @dragover.prevent.stop="handleDragover(com.id)"
         @drop.stop="handleDropEvt(com.id)"
       ></component>
@@ -26,36 +26,30 @@
 </template>
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { computed, ref, watch } from 'vue'
-import { useEditorStore } from '@/stores/editorStore'
+import { computed } from 'vue'
 import { componentRegistry } from '@/infra/registry/componentRegistry'
 import { ComponentSchema } from '@/domain/schema/component'
-import { useDragStore } from '@/stores/dragStore'
+import { useEditorStore, useDragStore } from '@/stores'
 const { get } = componentRegistry
+
 const editorStore = useEditorStore()
-const { currentPage, selectedComponent } = storeToRefs(editorStore)
+const { currentPage } = storeToRefs(editorStore)
+const { setSelectedComponent } = editorStore
+
 const { handleDropEvt, handleDragover } = useDragStore()
+
 const props = defineProps<{
   data: ComponentSchema
 }>()
-const flexDirect = ref(props.data.props.flexDirect)
+const flexDirect = computed(() => props.data.props.flexDirect)
 const children = computed(() => {
   const components = currentPage.value?.components || {}
   return props.data.children.map((id) => components[id])
 })
 const commonClass = 'small-container flex flex-1 border-dotted border-zinc-300 justify-start'
-const clickRef = (com: ComponentSchema) => {
-  selectedComponent.value = com
+const clickRef = (componentId: string) => {
+  setSelectedComponent(componentId)
 }
-watch(
-  () => selectedComponent,
-  (select) => {
-    if (select) {
-      flexDirect.value = props.data.props.flexDirect
-    }
-  },
-  { deep: true },
-)
 </script>
 <style scoped>
 .small-container {

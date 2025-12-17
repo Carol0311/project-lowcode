@@ -20,7 +20,7 @@
               :key="com.id"
               :data="com"
               :data-id="com.id"
-              @click.stop="clickRef(com)"
+              @click.stop="clickRef(com.id)"
               @dragover.prevent.stop="handleDragover(com.id)"
               @drop.stop="handleDropEvt(com.id)"
             />
@@ -42,14 +42,17 @@ import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 import { ref, useTemplateRef, onMounted } from 'vue'
 import { PhCaretDown, PhCaretUp } from '@phosphor-icons/vue'
-import { useEditorStore } from '@/stores/editorStore'
 import { componentRegistry } from '@/infra/registry/componentRegistry'
 import { ComponentSchema } from '@/domain/schema/component'
-import { useDragStore } from '@/stores/dragStore'
-const { handleDropEvt, handleDragover } = useDragStore()
+import { useEditorStore, useDragStore } from '@/stores'
+
 const { get } = componentRegistry
+
 const editorStore = useEditorStore()
-const { selectedComponent, currentPage } = storeToRefs(editorStore)
+const { currentPage } = storeToRefs(editorStore)
+const { setSelectedComponent } = editorStore
+
+const { handleDropEvt, handleDragover } = useDragStore()
 const props = defineProps<{
   data: ComponentSchema
 }>()
@@ -76,8 +79,8 @@ const clickEvt = () => {
     tabFormHeight.value = tabForm.value?.clientHeight || 100
   }
 }
-const clickRef = (com: ComponentSchema) => {
-  selectedComponent.value = com
+const clickRef = (componentId: string) => {
+  setSelectedComponent(componentId)
 }
 </script>
 <style scoped>
