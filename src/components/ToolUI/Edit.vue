@@ -1,6 +1,7 @@
 <template>
   <div class="component-edit-tool fixed pointer-events-none" :style="toolStyle">
     <div class="flex flex-row bg-orange-500 text-white justify-end pointer-events-auto">
+      <span v-if="selectedComponent">{{ selectedComponent.props.name }}</span>
       <PhArrowUp :size="16" weight="thin" @click="selectParent" />
       <PhCopy :size="16" weight="thin" @click="copyCom" />
       <PhTrash :size="16" weight="thin" @click="deleteCom" />

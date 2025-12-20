@@ -14,7 +14,7 @@ import type {
   ComponentType,
   ComponentProps,
 } from '@/domain/schema/index'
-import { COMPONENT_DEFAULT_PROPS } from '@/domain/constants/props'
+import { COMPONENT_DEFAULT_PROPS, COMPONENT_NAME_MAPPING } from '@/domain/constants/props'
 /**
  * 组件树管理器 - 纯函数实现
  * 所有方法都返回新的Page对象，支持时间旅行和协同编辑
@@ -359,19 +359,21 @@ function deepClone(arg: any, hash = new WeakMap()) {
 export function createDefaultProps(type: ComponentType): ComponentProps {
   switch (type) {
     case 'Container':
-      return { ...COMPONENT_DEFAULT_PROPS, flexDirect: 'column', isContainer: true }
+      return { ...COMPONENT_DEFAULT_PROPS, name: '容器', flexDirect: 'column', isContainer: true }
     case 'Form':
-      return { ...COMPONENT_DEFAULT_PROPS, tabTitle: '表单标题', isContainer: true }
+      return { ...COMPONENT_DEFAULT_PROPS, name: '表单', tabTitle: '表单标题', isContainer: true }
     case 'AdvanceForm':
-      return { ...COMPONENT_DEFAULT_PROPS, isContainer: true }
+      return { ...COMPONENT_DEFAULT_PROPS, name: '高级表单', isContainer: true }
     case 'EvelatorForm':
       return {
         ...COMPONENT_DEFAULT_PROPS,
+        name: '电梯表单',
         tabTitle: '电梯表单',
         showAnchor: true,
         direct: 0,
         isContainer: true,
       }
+    default:
+      return { ...COMPONENT_DEFAULT_PROPS, name: COMPONENT_NAME_MAPPING[type] }
   }
-  return COMPONENT_DEFAULT_PROPS
 }

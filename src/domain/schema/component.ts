@@ -22,6 +22,7 @@ export interface ComponentProps {
   /**表单项参数 smart-form-item级别*/
   cid: string // 不可变，用于定位页面组件节点
   parent: string //不可变，用于定位页面组件直接父节点节点
+  name: string //组件类型名称
   col?: 1 | 2 | 3 | 4 //占父级容器的列数对应["一列","二列","三列","四列"]
   label: string //label done
   //switchChild?:boolean,//是否开启子表单

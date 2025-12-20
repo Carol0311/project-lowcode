@@ -17,7 +17,7 @@
     </div>
     <div :class="[ui.uiStatic.checkCtrl, ctrl]">
       <span :class="[ui.uiStatic.checkbox]">
-        <label :cv-if="labelPos === 'inner'" class="ui.uiStatic.innerLabel">
+        <label v-if="labelPos === 'inner'" :class="ui.uiStatic.innerLabel">
           <div>
             <label>{{ config.label }}</label>
             <PhQuestion
