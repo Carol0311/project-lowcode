@@ -125,8 +125,8 @@ const comGroup = ref([
         show: true,
         children: [
           { name: '图片', show: true, type: '', icon: icons.image },
-          { name: '标题', show: true, type: '', icon: icons.text },
-          { name: '正文', show: true, type: '', icon: icons.textT },
+          /**{ name: '标题', show: true, type: '', icon: icons.text },
+          { name: '正文', show: true, type: '', icon: icons.textT },*/
         ],
       },
       {
@@ -136,11 +136,11 @@ const comGroup = ref([
         children: [
           { name: '自然布局', show: true, type: '', icon: icons.square },
           { name: '容器', show: true, type: 'Container', icon: icons.square },
-          { name: '自由节点', show: true, type: '', icon: icons.square },
-          { name: '页头', show: true, type: '', icon: icons.square },
           { name: '高级对话框', show: true, type: '', icon: icons.chat },
-          { name: '高级抽屉', show: true, type: '', icon: icons.dresser },
           { name: '选项卡', show: true, type: '', icon: icons.listChecks },
+          /**{ name: '自由节点', show: true, type: '', icon: icons.square },
+          { name: '页头', show: true, type: '', icon: icons.square },
+          { name: '高级抽屉', show: true, type: '', icon: icons.dresser },*/
         ],
       },
       {
@@ -152,8 +152,8 @@ const comGroup = ref([
           { name: '母子表格', show: true, type: '', icon: icons.table },
           { name: '查询筛选', show: true, type: '', icon: icons.funnel },
           { name: '分组表格', show: true, type: '', icon: icons.grid },
-          { name: '高级表格', show: true, type: '', icon: icons.table },
-          { name: '树状表格', show: true, type: '', icon: icons.tree },
+          /**{ name: '高级表格', show: true, type: '', icon: icons.table },
+          { name: '树状表格', show: true, type: '', icon: icons.tree },*/
         ],
       },
       {
@@ -171,12 +171,10 @@ const comGroup = ref([
         open: true,
         show: true,
         children: [
-          { name: '面积图', show: true, type: '', icon: icons.pie },
+          { name: '饼图', show: true, type: '', icon: icons.pie },
           { name: '条形图', show: true, type: '', icon: icons.bar },
-          { name: '柱状图', show: true, type: '', icon: icons.bar },
           { name: '环形图', show: true, type: '', icon: icons.donut },
           { name: '折线图', show: true, type: '', icon: icons.line },
-          { name: '饼图', show: true, type: '', icon: icons.pie },
         ],
       },
     ],
@@ -190,11 +188,11 @@ const comGroup = ref([
         open: true,
         show: true,
         children: [
-          { name: 'Box', show: true, type: '', icon: icons.cube },
+          /**{ name: 'Box', show: true, type: '', icon: icons.cube },*/
           { name: '对话框', show: true, type: '', icon: icons.chat },
-          { name: '隐藏底部', show: true, type: '', icon: icons.bottom },
+          /**{ name: '隐藏底部', show: true, type: '', icon: icons.bottom },
           { name: '侧抽屉', show: true, type: '', icon: icons.dresser },
-          { name: '底部抽屉', show: true, type: '', icon: icons.dresser },
+          { name: '底部抽屉', show: true, type: '', icon: icons.dresser },*/
         ],
       },
       {
@@ -211,7 +209,7 @@ const comGroup = ref([
           { name: '链接', show: true, type: '', icon: icons.link },
         ],
       },
-      {
+      /**{
         name: '引导',
         open: true,
         show: true,
@@ -220,40 +218,36 @@ const comGroup = ref([
           { name: '翻页器', show: true, type: '', icon: icons.files },
           { name: '步骤', show: true, type: '', icon: icons.steps },
         ],
-      },
+      },*/
       {
         name: '信息输入',
         open: true,
         show: true,
         children: [
-          { name: '普通型', show: true, type: 'Text', icon: icons.input },
-          { name: '自定义', show: true, type: '', icon: icons.custom },
-          { name: '级联选择器', show: true, type: '', icon: icons.listChecks },
-          { name: '级联', show: true, type: '', icon: icons.listChecks },
-          { name: '复选按钮', show: true, type: 'SCheckbox', icon: icons.check },
-          { name: '复选按钮组', show: true, type: 'CheckboxGroup', icon: icons.checks },
+          { name: '输入框', show: true, type: 'Text', icon: icons.input },
+          { name: 'TextArea', show: true, type: 'TextArea', icon: icons.input },
+          { name: '数字输入框', show: true, type: 'Number', icon: icons.input },
+          { name: '密码框', show: true, type: '', icon: icons.password },
           { name: '日期选择框', show: true, type: 'Date', icon: icons.date },
           { name: '日期区间', show: true, type: 'DateRange', icon: icons.dateRange },
-          { name: '表单容器', show: true, type: '', icon: icons.file },
-          { name: '输入框', show: true, type: 'Text', icon: icons.input },
-          { name: '密码框', show: true, type: '', icon: icons.password },
-          { name: 'TextArea', show: true, type: 'TextArea', icon: icons.input },
-          { name: 'NextTable', show: true, type: '', icon: icons.table },
-          { name: '数字输入框', show: true, type: 'Number', icon: icons.input },
           { name: '单选按钮', show: true, type: 'Radio', icon: icons.button },
           { name: '单选按钮组', show: true, type: 'RadioGroup', icon: icons.button },
-          { name: '区段选择器', show: true, type: '', icon: icons.input },
-          { name: '搜索', show: true, type: '', icon: icons.search },
-          { name: '带分类', show: true, type: '', icon: icons.input },
-          { name: '选择器', show: true, type: '', icon: icons.input },
+          { name: '复选按钮', show: true, type: 'SCheckbox', icon: icons.check },
+          { name: '复选按钮组', show: true, type: 'CheckboxGroup', icon: icons.checks },
+          { name: '地址级联', show: true, type: '', icon: icons.listChecks },
           { name: '开关组件', show: true, type: 'Switch', icon: icons.switch },
+          { name: '搜索', show: true, type: '', icon: icons.search },
+          { name: '分类搜索', show: true, type: '', icon: icons.input },
+          { name: '上传组件', show: true, type: '', icon: icons.upload },
+          /**{ name: '区段选择器', show: true, type: '', icon: icons.input },
+          { name: '选择器', show: true, type: '', icon: icons.input },
           { name: '时间选择框', show: true, type: '', icon: icons.times },
           { name: '穿梭框', show: true, type: '', icon: icons.splitH },
           { name: '树型选择控件', show: true, type: '', icon: icons.tree },
-          { name: '上传组件', show: true, type: '', icon: icons.upload },
+          { name: '上传组件', show: true, type: '', icon: icons.upload },*/
         ],
       },
-      {
+      /**{
         name: '信息展示',
         open: true,
         show: true,
@@ -271,8 +265,8 @@ const comGroup = ref([
           { name: '树型控件', show: true, type: '', icon: icons.treeS },
           { name: '视频', show: true, type: '', icon: icons.vedio },
         ],
-      },
-      {
+      },*/
+      /**{
         name: '信息反馈',
         open: true,
         show: true,
@@ -283,7 +277,7 @@ const comGroup = ref([
           { name: '进度指示器', show: true, type: '', icon: icons.spinner },
           { name: '面包片', show: true, type: '', icon: icons.bread },
         ],
-      },
+      },*/
     ],
   },
   {

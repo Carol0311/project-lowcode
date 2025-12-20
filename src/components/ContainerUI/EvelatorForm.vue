@@ -1,10 +1,10 @@
 <template>
   <div ref="anchorGroup" class="smart-tabgroup">
-    <div v-if="data.props.showAnchor" class="smart-tabgroup-anchor bg-white">
+    <div v-if="config.showAnchor" class="smart-tabgroup-anchor bg-white">
       <div class="inline-flex bg-gray-100 p-1 rounded relative">
         <div
           class="anchor-list flex items-center"
-          :class="{ 'flex-row': data.props.direct === 0, 'flex-col': data.props.direct === 1 }"
+          :class="{ 'flex-row': config.direct === 0, 'flex-col': config.direct === 1 }"
         >
           <div
             v-for="(tab, i) in children"
@@ -40,12 +40,16 @@ import { useEventBus } from '@/composables/useEventBus'
 import { useEditorStore } from '@/stores/editorStore'
 import { componentRegistry } from '@/infra/registry/componentRegistry'
 import { ComponentSchema } from '@/domain/schema/component'
+import { useUiConfig } from '@/composables/useUiConfig'
+
 const { get } = componentRegistry
 const editorStore = useEditorStore()
 const { currentPage } = storeToRefs(editorStore)
 const props = defineProps<{
   data: ComponentSchema
 }>()
+const ui = useUiConfig(props.data.id)
+const { config } = ui
 const children = computed(() => {
   const components = currentPage.value?.components || {}
   return props.data.children.map((id) => components[id])

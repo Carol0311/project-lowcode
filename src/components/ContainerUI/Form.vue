@@ -3,7 +3,7 @@
     <div class="smart-tab-head px-4">
       <div class="smart-tab-head-main mt-2 border-b border-solid border-zinc-300">
         <div class="smart-tab-title pl-2 text-gray-600 text-base relative">
-          {{ data.props.tabTitle }}
+          {{ config.tabTitle }}
         </div>
       </div>
     </div>
@@ -45,6 +45,7 @@ import { PhCaretDown, PhCaretUp } from '@phosphor-icons/vue'
 import { componentRegistry } from '@/infra/registry/componentRegistry'
 import { ComponentSchema } from '@/domain/schema/component'
 import { useEditorStore, useDragStore } from '@/stores'
+import { useUiConfig } from '@/composables/useUiConfig'
 
 const { get } = componentRegistry
 
@@ -56,6 +57,8 @@ const { handleDropEvt, handleDragover } = useDragStore()
 const props = defineProps<{
   data: ComponentSchema
 }>()
+const ui = useUiConfig(props.data.id)
+const { config } = ui
 const children = computed(() => {
   const components = currentPage.value?.components || {}
   return props.data.children.map((id) => components[id])
@@ -63,7 +66,6 @@ const children = computed(() => {
 /**展开收起功能*/
 const fold = ref(true)
 const direct = ref('展开')
-const config = computed(() => props.data.props)
 const tabForm = useTemplateRef<HTMLElement>('tabForm')
 const tabFormHeight = ref(100)
 onMounted(() => {

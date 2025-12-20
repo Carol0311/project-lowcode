@@ -9,6 +9,7 @@ import { storeToRefs } from 'pinia'
 import { useEditorStore } from '@/stores/editorStore'
 import { componentRegistry } from '@/infra/registry/componentRegistry'
 import { ComponentSchema } from '@/domain/schema/component'
+import { useUiConfig } from '@/composables/useUiConfig'
 const { get } = componentRegistry
 
 const editorStore = useEditorStore()
@@ -17,6 +18,7 @@ const { currentPage } = storeToRefs(editorStore)
 const props = defineProps<{
   data: ComponentSchema
 }>()
+useUiConfig(props.data.id)
 const children = computed(() => {
   const components = currentPage.value?.components || {}
   return props.data.children.map((id) => components[id])
