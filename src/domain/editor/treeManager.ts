@@ -12,8 +12,9 @@ import type {
   BatchPayload,
   EditorCommand,
   ComponentType,
+  ComponentProps,
 } from '@/domain/schema/index'
-
+import { COMPONENT_DEFAULT_PROPS } from '@/domain/constants/props'
 /**
  * 组件树管理器 - 纯函数实现
  * 所有方法都返回新的Page对象，支持时间旅行和协同编辑
@@ -190,7 +191,7 @@ export class TreeManager {
   }
   //拖拽原子组件到放置区域
   static dropComponent(page: PageSchema, payload: ComponentDropPayload): PageSchema {
-    const { dropId, isForm, type } = payload
+    const { dropId, type } = payload
     return produce(page, (draft) => {
       const components = draft.components || {}
       const rootIds = draft.rootComponentIds || []
@@ -198,7 +199,7 @@ export class TreeManager {
       let item: ComponentSchema
       if (drop) {
         const parent = this.findComponentById(draft, drop.parentId)
-        if (isForm) {
+        if (drop.props.isContainer) {
           //拖拽组件放置在容器中成为子组件
           item = this.createNewComponent(dropId, type)
           drop.children.push(item.id)
@@ -221,6 +222,7 @@ export class TreeManager {
       }
       //子组件加入节点映射
       components[item.id] = item
+      draft.selectId = item.id
     })
   }
 
@@ -254,7 +256,7 @@ export class TreeManager {
       id: generateComponentId(type),
       parentId,
       type,
-      props: {},
+      props: createDefaultProps(type),
       children: [],
     }
   }
@@ -352,4 +354,24 @@ function deepClone(arg: any, hash = new WeakMap()) {
     }
     return result
   }
+}
+//获取组件默认属性
+export function createDefaultProps(type: ComponentType): ComponentProps {
+  switch (type) {
+    case 'Container':
+      return { ...COMPONENT_DEFAULT_PROPS, flexDirect: 'column', isContainer: true }
+    case 'Form':
+      return { ...COMPONENT_DEFAULT_PROPS, tabTitle: '表单标题', isContainer: true }
+    case 'AdvanceForm':
+      return { ...COMPONENT_DEFAULT_PROPS, isContainer: true }
+    case 'EvelatorForm':
+      return {
+        ...COMPONENT_DEFAULT_PROPS,
+        tabTitle: '电梯表单',
+        showAnchor: true,
+        direct: 0,
+        isContainer: true,
+      }
+  }
+  return COMPONENT_DEFAULT_PROPS
 }

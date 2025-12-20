@@ -3,8 +3,8 @@
     :class="{
       [commonClass]: true,
       border: children && children?.length < 1,
-      'flex-col': flexDirect === 'column',
-      'flex-row': flexDirect === 'row',
+      'flex-col': config.flexDirect === 'column',
+      'flex-row': config.flexDirect === 'row',
     }"
   >
     <template v-if="children && children.length > 0">
@@ -30,6 +30,7 @@ import { computed } from 'vue'
 import { componentRegistry } from '@/infra/registry/componentRegistry'
 import { ComponentSchema } from '@/domain/schema/component'
 import { useEditorStore, useDragStore } from '@/stores'
+import { useUiConfig } from '@/composables/useUiConfig'
 const { get } = componentRegistry
 
 const editorStore = useEditorStore()
@@ -41,7 +42,8 @@ const { handleDropEvt, handleDragover } = useDragStore()
 const props = defineProps<{
   data: ComponentSchema
 }>()
-const flexDirect = computed(() => props.data.props.flexDirect)
+const ui = useUiConfig(props.data.id)
+const { config } = ui
 const children = computed(() => {
   const components = currentPage.value?.components || {}
   return props.data.children.map((id) => components[id])

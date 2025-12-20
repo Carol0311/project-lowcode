@@ -1,11 +1,11 @@
 <template>
   <div class="props-tab">
-    <FoldAndOpen v-show="propsData.isForm" :data="{ name: '全局配置', open: true }">
+    <FoldAndOpen v-show="propsData.isContainer" :data="{ name: '全局配置', open: true }">
       <PRadio v-model="propsData.tabStatus" :data="{ name: '状态', list: statusData }" />
       <PRadio v-model="propsData.tabLayout" :data="{ name: '布局', list: FColData }" />
       <PRadio v-model="propsData.labelPos" :data="{ name: '标签位置', list: posData }" />
     </FoldAndOpen>
-    <FoldAndOpen v-show="!propsData.isForm" :data="{ name: '表单项配置', open: true }">
+    <FoldAndOpen v-show="!propsData.isContainer" :data="{ name: '表单项配置', open: true }">
       <PText v-model="propsData.id" :data="{ name: '表单标识' }" />
       <PRadio v-model="propsData.col" :data="{ name: '表单项宽度', list: FColData }" />
       <PText v-model="propsData.label" :data="{ name: '标题' }" />
@@ -28,7 +28,7 @@
       <PSwitch v-model="propsData.preview" :data="{ name: '预览态' }" />
       <PSwitch v-model="propsData.autoValidate" :data="{ name: '自动校验' }" />
     </FoldAndOpen>
-    <FoldAndOpen v-show="!propsData.isForm" :data="{ name: '组件配置' }">
+    <FoldAndOpen v-show="!propsData.isContainer" :data="{ name: '组件配置' }">
       <!--<PText :data="{ name: '标签文本' }" />-->
       <PText v-model="propsData.defaultVal" :data="{ name: '默认值' }" />
       <PText v-model="propsData.placeholder" :data="{ name: '输入提示' }" />
@@ -108,7 +108,11 @@ watch(
   () => selectedComponent.value,
   (com) => {
     if (com) {
-      propsData.value = { ...com.props, isForm: FORM_ARR.includes(com.type), cid: com.id }
+      propsData.value = {
+        ...com.props,
+        id: com.id,
+        cid: com.id,
+      }
     }
   },
   { immediate: true },

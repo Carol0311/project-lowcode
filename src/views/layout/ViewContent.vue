@@ -28,6 +28,8 @@ import { ComponentSchema, PageSchema } from '@/domain/schema'
 import { useScrollPosition } from '@/composables/useScrollPosition'
 import { componentRegistry } from '@/infra/registry/componentRegistry'
 import { useProjectStore, useEditorStore, useDragStore } from '@/stores'
+import { createDefaultProps } from '@/domain/editor/treeManager'
+
 const { get } = componentRegistry
 const { setProject } = useProjectStore()
 
@@ -41,16 +43,16 @@ const { handleDropEvt, handleDragover } = useDragStore()
 const defaultPageId = generateUniqueId('Page')
 const defaultRootViewId = generateUniqueId('View')
 const defaultRootComId = generateUniqueId('Container')
+const defaultProps = createDefaultProps('Container')
 
 const defaultComponent = <ComponentSchema>{
   id: defaultRootComId,
   parentId: defaultRootViewId,
   type: 'Container',
-  props: {
-    flexDirect: 'column',
-  },
+  props: {},
   children: [],
 }
+
 const page = <PageSchema>{
   id: defaultRootViewId,
   name: '默认编辑页面',

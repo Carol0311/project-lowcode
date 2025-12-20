@@ -11,8 +11,6 @@ import type {
   ComponentUpdatePayload,
 } from '@/domain/schema/index'
 
-const FormArr = ['Container', 'Form', 'AdvanceForm', 'EvelatorForm']
-
 // 初始化服务---模块化的单例模式
 export const useEditorStore = defineStore('editor', () => {
   // ==================== 状态 ====================
@@ -47,9 +45,10 @@ export const useEditorStore = defineStore('editor', () => {
 
     if (result.success && result.newPage) {
       currentPage.value = result.newPage
-
-      // 更新选中组件引用
-      setSelectedComponent(currentPage.value.selectId)
+      // 更新组件属性不需要 切换选中组件引用
+      if (!['COMPONENT_UPDATE'].includes(command.type)) {
+        setSelectedComponent(currentPage.value.selectId)
+      }
 
       return true
     }
@@ -132,9 +131,10 @@ export const useEditorStore = defineStore('editor', () => {
   }
   //拖拽原子组件到放置区域
   const dropComponent = async (dropId: string, type: ComponentType) => {
-    const drop = findComponentById(dropId)
-    const isForm = drop ? FormArr.includes(drop.type) : false
-    const command = createCommand('COMPONENT_DROP', { dropId, isForm, type })
+    const command = createCommand('COMPONENT_DROP', {
+      dropId,
+      type,
+    })
     return executeCommand(command, { sync: false, track: true })
   }
 

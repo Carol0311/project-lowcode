@@ -79,7 +79,6 @@ export interface ComponentCutPayload {
 export interface ComponentDropPayload {
   dropId: string
   type: ComponentType
-  isForm: boolean
 }
 // 批量命令的payload
 export interface BatchPayload {

@@ -4,7 +4,7 @@
       <label>{{ config.label }}</label>
       <PhQuestion
         v-if="config.tip"
-        v-dialog:[config.id]="config.label"
+        v-dialog:[config.cid]="config.label"
         :size="16"
         weight="light"
         class="inline-block mb-1 cursor-pointer"
@@ -22,7 +22,7 @@
             <label>{{ config.label }}</label>
             <PhQuestion
               v-if="config.tip"
-              v-dialog:[config.id]="config.label"
+              v-dialog:[config.cid]="config.label"
               :size="16"
               weight="light"
               class="inline-block mb-1 cursor-pointer"
@@ -52,8 +52,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { Component } from 'vue'
-import { computed } from 'vue'
 import { PhToggleRight, PhQuestion, PhAsterisk } from '@phosphor-icons/vue'
 import { Info } from '@/components/UintUI'
 import { useUiConfig } from '@/composables/useUiConfig'
@@ -63,13 +61,9 @@ import { ComponentSchema } from '@/domain/schema/component'
 const props = defineProps<{
   data: ComponentSchema
 }>()
-const ui = useUiConfig({
-  id: props.data.id,
-})
-const { item, outLabel, ctrl, checkIcon } = ui.uiClass
-const config = computed(() => {
-  return props.data.props
-})
+const ui = useUiConfig(props.data.id)
+const { config } = ui
 const { labelPos } = ui.uiByParent
+const { item, outLabel, ctrl, checkIcon } = ui.uiClass
 </script>
 <style scoped></style>

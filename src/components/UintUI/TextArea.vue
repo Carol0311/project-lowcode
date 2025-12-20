@@ -4,7 +4,7 @@
       <label>{{ config.label }}</label>
       <PhQuestion
         v-if="config.tip"
-        v-dialog:[config.id]="config.label"
+        v-dialog:[config.cid]="config.label"
         :size="16"
         weight="light"
         class="inline-block mb-1 cursor-pointer"
@@ -22,7 +22,7 @@
             <label>{{ config.label }}</label>
             <PhQuestion
               v-if="config.tip"
-              v-dialog:[config.id]="config.label"
+              v-dialog:[config.cid]="config.label"
               :size="16"
               weight="light"
               class="inline-block mb-1 cursor-pointer"
@@ -35,8 +35,6 @@
           </div>
         </label>
         <textarea
-          :id="config.id"
-          ref="inputRef"
           v-focus="config.focus"
           :class="[ui.uiStatic.input]"
           class="py-2"
@@ -75,14 +73,10 @@ import { ComponentSchema } from '@/domain/schema/component'
 const props = defineProps<{
   data: ComponentSchema
 }>()
-const ui = useUiConfig({
-  id: props.data.id,
-})
-const config = computed(() => {
-  return props.data.props
-})
-const dynamicIcon = config.value.clear ? PhXCircle : PhGear
+const ui = useUiConfig(props.data.id)
+const { config } = ui
 const { item, outLabel, ctrl, inputBox } = ui.uiClass
 const { labelPos } = ui.uiByParent
+const dynamicIcon = config.value.clear ? PhXCircle : PhGear
 </script>
 <style scoped></style>

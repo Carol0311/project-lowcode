@@ -4,7 +4,7 @@
       <label>{{ config.label }}</label>
       <PhQuestion
         v-if="config.tip"
-        v-dialog:[config.id]="config.label"
+        v-dialog:[config.cid]="config.label"
         :size="16"
         weight="light"
         class="inline-block mb-1 cursor-pointer"
@@ -22,7 +22,7 @@
             <label>{{ config.label }}</label>
             <PhQuestion
               v-if="config.tip"
-              v-dialog:[config.id]="config.label"
+              v-dialog:[config.cid]="config.label"
               :size="16"
               weight="light"
               class="inline-block mb-1 cursor-pointer"
@@ -35,8 +35,6 @@
           </div>
         </label>
         <input
-          :id="config.id"
-          ref="inputRef"
           :class="[ui.uiStatic.input]"
           autocomplete="false"
           :placeholder="config.placeholder"
@@ -64,24 +62,19 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed } from 'vue'
 import { PhXCircle, PhQuestion, PhAsterisk, PhGear } from '@phosphor-icons/vue'
 import { useUiConfig } from '@/composables/useUiConfig'
 import { Info } from '@/components/UintUI'
 import { vDialog } from '@/plugins/CusDirectives'
 import { ComponentSchema } from '@/domain/schema/component'
+
 const props = defineProps<{
   data: ComponentSchema
 }>()
-const ui = useUiConfig({
-  id: props.data.id,
-  parent: props.data.parentId,
-})
-const config = computed(() => {
-  return props.data.props
-})
-const dynamicIcon = config.value.clear ? PhXCircle : PhGear
-const { item, outLabel, ctrl, inputBox } = ui.uiClass
+const ui = useUiConfig(props.data.id)
+const { config } = ui
 const { labelPos } = ui.uiByParent
+const { item, outLabel, ctrl, inputBox } = ui.uiClass
+const dynamicIcon = config.value.clear ? PhXCircle : PhGear
 </script>
 <style scoped></style>
