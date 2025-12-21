@@ -2,8 +2,10 @@
 import type { Component } from 'vue'
 import * as UintUI from '@/components/UintUI'
 import * as ContainerUI from '@/components/ContainerUI'
+import FormItem from '@/components/SlotUI/FormItem.vue'
 import type { ComponentType } from '@/domain/schema/component'
 const registry: Record<ComponentType, Component> = {
+  FormItem: FormItem,
   Text: UintUI.Text,
   Date: UintUI.Date,
   DateRange: UintUI.DateRange,

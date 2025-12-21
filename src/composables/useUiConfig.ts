@@ -2,6 +2,16 @@ import { reactive, computed } from 'vue'
 import { useEditorStore } from '@/stores/editorStore'
 import { UI_STATIC } from '@/composables/constant/uiClass'
 import { createDefaultProps } from '@/domain/editor/treeManager'
+import { ComponentType } from '@/domain/schema'
+import {
+  PhGear,
+  PhXCircle,
+  PhCalendar,
+  PhToggleRight,
+  PhCheckSquare,
+  PhCheckCircle,
+  PhCaretCircleDown,
+} from '@phosphor-icons/vue'
 
 /**组件交互状态*/
 export interface UiState {
@@ -106,6 +116,28 @@ export const useUiConfig = (componentId: string) => {
   const resetState = () => {
     state.isFocus = false
   }
+  const getIcon = (type: ComponentType) => {
+    switch (type) {
+      case 'Text':
+      case 'TextArea':
+        return config.value.clear ? PhXCircle : PhGear
+      case 'SSelect':
+        return config.value.clear ? PhXCircle : PhCaretCircleDown
+      case 'Date':
+      case 'DateRange':
+        return config.value.clear ? PhXCircle : PhCalendar
+      case 'Switch':
+        return PhToggleRight
+      case 'Radio':
+      case 'RadioGroup':
+        return PhCheckCircle
+      case 'SCheckbox':
+      case 'CheckboxGroup':
+        return PhCheckSquare
+      default:
+        return PhGear
+    }
+  }
 
   return {
     config,
@@ -114,6 +146,7 @@ export const useUiConfig = (componentId: string) => {
     uiStatic: UI_STATIC,
     uiEvents,
     uiByParent,
+    getIcon,
     resetState,
   }
 }

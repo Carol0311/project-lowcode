@@ -1,5 +1,6 @@
 //component schema
 export type ComponentType =
+  | 'FormItem'
   | 'Text'
   | 'Date'
   | 'DateRange'

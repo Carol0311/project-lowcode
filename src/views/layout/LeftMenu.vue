@@ -87,7 +87,12 @@
                   :key="cindex"
                   class="ui-item flex flex-col items-center justify-between border-l border-b border-solid border-zinc-300 p-3.5 h-28"
                   :draggable="true"
-                  @dragstart="handleDragStart(child.type)"
+                  @dragstart="
+                    () => {
+                      handleDragStart(child.type)
+                      showDetl = false
+                    }
+                  "
                 >
                   <component :is="child.icon" :size="36" weight="light" />
                   <span>{{ child.name }}</span>
