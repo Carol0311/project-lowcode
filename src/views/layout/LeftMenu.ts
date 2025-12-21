@@ -124,7 +124,7 @@ const comGroup = ref([
         open: true,
         show: true,
         children: [
-          { name: '图片', show: true, type: '', icon: icons.image },
+          { name: '图片', show: true, type: 'Image', icon: icons.image },
           /**{ name: '标题', show: true, type: '', icon: icons.text },
           { name: '正文', show: true, type: '', icon: icons.textT },*/
         ],
@@ -227,7 +227,6 @@ const comGroup = ref([
           { name: '输入框', show: true, type: 'Text', icon: icons.input },
           { name: 'TextArea', show: true, type: 'TextArea', icon: icons.input },
           { name: '数字输入框', show: true, type: 'Number', icon: icons.input },
-          { name: '密码框', show: true, type: '', icon: icons.password },
           { name: '日期选择框', show: true, type: 'Date', icon: icons.date },
           { name: '日期区间', show: true, type: 'DateRange', icon: icons.dateRange },
           { name: '单选按钮', show: true, type: 'Radio', icon: icons.button },
@@ -236,10 +235,12 @@ const comGroup = ref([
           { name: '复选按钮组', show: true, type: 'CheckboxGroup', icon: icons.checks },
           { name: '地址级联', show: true, type: '', icon: icons.listChecks },
           { name: '开关组件', show: true, type: 'Switch', icon: icons.switch },
-          { name: '搜索', show: true, type: '', icon: icons.search },
-          { name: '分类搜索', show: true, type: '', icon: icons.input },
+          { name: '搜索', show: true, type: 'Search', icon: icons.search },
+          { name: '分类搜索', show: true, type: 'CategorySearch', icon: icons.input },
           { name: '上传组件', show: true, type: '', icon: icons.upload },
-          /**{ name: '区段选择器', show: true, type: '', icon: icons.input },
+          /**
+          { name: '密码框', show: true, type: '', icon: icons.password },
+          { name: '区段选择器', show: true, type: '', icon: icons.input },
           { name: '选择器', show: true, type: '', icon: icons.input },
           { name: '时间选择框', show: true, type: '', icon: icons.times },
           { name: '穿梭框', show: true, type: '', icon: icons.splitH },
