@@ -1,4 +1,4 @@
-import './assets/lowcode.css'
+import './assets/css/lowcode.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'

@@ -34,3 +34,20 @@ export const generateId = (): string => {
     Math.random().toString(36).substring(2, 15)
   )
 }
+//检测当前设备是否在移动端
+export const isMobile = (): boolean => {
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || 'ontouchstart' in window
+}
+//检测移动端是否有摄像头
+export const hasCamera = async () => {
+  if (isMobile() && 'mediaDevice' in navigator) {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices()
+      return devices.some((device) => device.kind === 'videoinput')
+    } catch (e) {
+      console.log(e)
+      return false
+    }
+  }
+  return false
+}

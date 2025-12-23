@@ -20,6 +20,8 @@ const registry: Record<ComponentType, Component> = {
   SCheckbox: UintUI.SCheckbox,
   CheckboxGroup: UintUI.CheckboxGroup,
   TextArea: UintUI.TextArea,
+  Upload: UintUI.Upload,
+  Address: UintUI.Address,
   Image: UintUI.Image,
   Search: UintUI.Search,
   CategorySearch: UintUI.CategorySearch,

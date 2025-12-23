@@ -233,11 +233,11 @@ const comGroup = ref([
           { name: '单选按钮组', show: true, type: 'RadioGroup', icon: icons.button },
           { name: '复选按钮', show: true, type: 'SCheckbox', icon: icons.check },
           { name: '复选按钮组', show: true, type: 'CheckboxGroup', icon: icons.checks },
-          { name: '地址级联', show: true, type: '', icon: icons.listChecks },
+          { name: '地址级联', show: true, type: 'Address', icon: icons.listChecks },
           { name: '开关组件', show: true, type: 'Switch', icon: icons.switch },
           { name: '搜索', show: true, type: 'Search', icon: icons.search },
           { name: '分类搜索', show: true, type: 'CategorySearch', icon: icons.input },
-          { name: '上传组件', show: true, type: '', icon: icons.upload },
+          { name: '上传组件', show: true, type: 'Upload', icon: icons.upload },
           /**
           { name: '密码框', show: true, type: '', icon: icons.password },
           { name: '区段选择器', show: true, type: '', icon: icons.input },

@@ -15,6 +15,8 @@ export type ComponentType =
   | 'SCheckbox'
   | 'CheckboxGroup'
   | 'TextArea'
+  | 'Upload'
+  | 'Address'
   | 'Image'
   | 'Search'
   | 'CategorySearch'
