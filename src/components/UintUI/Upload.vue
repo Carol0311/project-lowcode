@@ -3,8 +3,8 @@
     <div
       class="upload-action relative bg-zinc-100 border border-dashed border-zinc-300"
       tabindex="0"
-      @paste="pasteFile"
-      @drop="dropFile"
+      @paste.prevent="pasteFile"
+      @drop.prevent="dropFile"
     >
       <div class="upload-area text-zinc-500 relative text-center">
         粘贴，拖拽文件至此区域上传或点击按钮上传
@@ -26,21 +26,35 @@
         >拍照上传</span
       >
     </div>
-    <div class="file-list"></div>
+    <div class="file-list">
+      <a
+        v-for="file in uploadedList"
+        :key="file.id"
+        :href="file.src"
+        @click.prevent="downloadFile(file)"
+        >{{ file.name }}</a
+      >
+    </div>
   </div>
 </template>
 <script setup lang="ts">
 import { useTemplateRef, ref, onMounted } from 'vue'
 import { ComponentSchema } from '@/domain/schema/component'
 import { useUiConfig } from '@/composables/useUiConfig'
-import { isMobile, hasCamera } from '@/utils'
+import { isMobile, hasCamera, isValidateFile } from '@/utils'
 
+interface UploadedFile {
+  id: string
+  src: string
+  name: string
+}
 //上传文件接受类型
 const ACCEPT_TYPE = 'image/*,.pdf,.word,.xlsx,.doc,.docx,.txt,.zip'
 //文件最小切片
 const CHUNK_SIZE = 2 * 1024 * 1024
 const isMobileDevice = ref<boolean>(false)
 const ishasCamera = ref(false)
+const uploadedList = ref<UploadedFile[]>([])
 
 onMounted(() => {
   isMobileDevice.value = isMobile()
@@ -69,13 +83,24 @@ const afterFileSelect = (e: Event) => {
 }
 //粘贴文件上传
 const pasteFile = (e) => {
-  const file = e.clipboardData.files[0]
-  splitFileChunk(file)
+  const items = e.clipboardData.items
+  if (!items) return
+  for (let i = 0; i < items.length; i++) {
+    if (items[i].kind === 'file') {
+      const f = items[i].getAsFile()
+      if (f && isValidateFile(f, ACCEPT_TYPE)) {
+        splitFileChunk(f)
+        break
+      }
+    }
+  }
 }
 //拖拽文件上传
 const dropFile = (e) => {
   const file = e.dataTransfer.files[0]
-  splitFileChunk(file)
+  if (file && isValidateFile(file, ACCEPT_TYPE)) {
+    splitFileChunk(file)
+  }
 }
 //生成file hash
 const generateFileHash = async (file: File) => {
@@ -111,6 +136,11 @@ const uploadChunk = async (chunkList) => {
   })
   await Promise.all(uploadPromise)
   //发送请求到服务端通知合并文件切片
+}
+//下载文件
+const downloadFile = (file) => {
+  console.log(file)
+  //发送请求到后端通知下载了
 }
 </script>
 <style coped>

@@ -51,3 +51,34 @@ export const hasCamera = async () => {
   }
   return false
 }
+//通用文件验证
+export const isValidateFile = (file, acceptList): boolean => {
+  const acceptTypes = acceptList.split(',')
+  acceptTypes.some((type) => {
+    if (type.match(/\/*/)) {
+      const category = type.split('/')[0]
+      return file.type.startsWith(category)
+    }
+    return file.type === type || file.name.toLowerCase().endsWith(type.replace('.', ''))
+  })
+  return false
+}
+//扁平数据转换为树形嵌套结构数据
+export const buildTree = (flatData) => {
+  const treeMap = new Map()
+  const rootTree = []
+  //加入id-->数据映射
+  flatData.forEach((item) => {
+    treeMap.set(item.id, { ...item, children: [] })
+  })
+  //构建parent--children关系
+  flatData.forEach((item) => {
+    if (item.parentid && treeMap.has(item.parentid)) {
+      const parent = treeMap.get(item.parentid)
+      parent.children.push(item.id)
+    } else {
+      rootTree.push(item)
+    }
+  })
+  return { treeMap, rootTree }
+}
