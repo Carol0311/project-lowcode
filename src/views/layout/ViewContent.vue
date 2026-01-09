@@ -29,6 +29,7 @@ import { useScrollPosition } from '@/composables/useScrollPosition'
 import { componentRegistry } from '@/infra/registry/componentRegistry'
 import { useProjectStore, useEditorStore, useDragStore } from '@/stores'
 import { createDefaultProps } from '@/domain/editor/treeManager'
+import { getPageList } from '@/infra/http/editorApi'
 
 const { get } = componentRegistry
 const { setProject } = useProjectStore()
@@ -61,8 +62,14 @@ const page = <PageSchema>{
   children: { [defaultRootViewId]: [defaultRootComId] },
 }
 onMounted(() => {
-  setProject(defaultPageId, page)
-  setCurrentPage(defaultPageId, page)
+  getPageList().then((res) => {
+    if (res && res.data) {
+      setProject(res.data.pageList)
+      if (res.data.pageList.length > 0) {
+        setCurrentPage(res.data.pageList[0])
+      }
+    }
+  })
 })
 //根页面组件
 const rootComponents = computed(() => {

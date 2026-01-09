@@ -1,35 +1,50 @@
-//对接后端：保存页面、加载项目、发布等
-import { PageSchema, ProjectSchema } from '@/domain/schema/index'
-export class EditorApi {
-  async savePage(projectId: string, page: PageSchema): Promise<boolean> {
-    // 调用后端API保存页面
-    console.log(`Saving page ${page.id} of project ${projectId} to server...`)
-    // 模拟异步操作
-    return new Promise((resolve) => setTimeout(() => resolve(true), 500))
-  }
+/**
+ * 编辑器区域请求
+ */
+import request from './request'
+import { PageListResponse, PageResponse, PageDeleteResponse } from '@/domain/schema/request'
 
-  async loadProject(projectId: string): Promise<ProjectSchema | null> {
-    // 调用后端API加载项目
-    console.log(`Loading project ${projectId} from server...`)
-    // 模拟异步操作
-    return new Promise((resolve) =>
-      setTimeout(
-        () =>
-          resolve({
-            id: projectId,
-            name: 'Demo Project',
-            pages: {},
-            homePageId: 'view page id',
-          }),
-        500,
-      ),
-    )
-  }
+//获取页面列表
+export const getPageList = (): Promise<PageListResponse> =>
+  request({
+    url: '/api/getPageList',
+    method: 'get',
+  })
+//新增页面
+export const createPage = (data): Promise<PageResponse> =>
+  request({
+    url: '/api/createPage',
+    method: 'post',
+    data,
+  })
+//保存页面
+export const savePage = (data): Promise<PageResponse> =>
+  request({
+    url: '/api/savePage',
+    method: 'post',
+    data,
+  })
 
-  async publishProject(projectId: string): Promise<boolean> {
-    // 调用后端API发布项目
-    console.log(`Publishing project ${projectId} to live...`)
-    // 模拟异步操作
-    return new Promise((resolve) => setTimeout(() => resolve(true), 500))
-  }
-}
+//更新页面(包括更新组件，删除/新增/复制/移动组件等)
+export const updatePage = (data): Promise<PageResponse> =>
+  request({
+    url: '/api/updatePage',
+    method: 'post',
+    data,
+  })
+
+//删除页面
+export const deletePage = (params): Promise<PageDeleteResponse> =>
+  request({
+    url: '/api/deletePage',
+    method: 'delete',
+    params,
+  })
+
+//获取页面详情
+export const getPageDetail = (params): Promise<PageResponse> =>
+  request({
+    url: '/api/getPageDetail',
+    method: 'get',
+    params,
+  })

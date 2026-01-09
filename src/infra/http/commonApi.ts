@@ -1,23 +1,18 @@
-//封装 axios/fetch，统一拦截器
-// infra/http/client.ts
+/**
+ * 非编辑器区域请求
+ */
 import request from './request'
-
-export interface AddressList {
-  id: string
-  parentid: string
-  name: string
-  children?: []
-}
+import { AddressResponse } from '@/domain/schema/request'
 
 //获取省份数据
-export const getProvince = (): Promise<AddressList[]> =>
+export const getProvince = (): Promise<AddressResponse> =>
   request({
     url: '/api/province',
     method: 'get',
   })
 
 //获取城市数据
-export const getCity = (params): Promise<AddressList[]> =>
+export const getCity = (params): Promise<AddressResponse> =>
   request({
     url: `/api/city`,
     method: 'get',
@@ -25,7 +20,7 @@ export const getCity = (params): Promise<AddressList[]> =>
   })
 
 //获取区县数据
-export const getDistrict = (params): Promise<AddressList[]> =>
+export const getDistrict = (params): Promise<AddressResponse> =>
   request({
     url: `/api/district`,
     method: 'get',
@@ -33,7 +28,7 @@ export const getDistrict = (params): Promise<AddressList[]> =>
   })
 
 //获取街道乡镇数据
-export const getCounty = (params): Promise<AddressList[]> =>
+export const getCounty = (params): Promise<AddressResponse> =>
   request({
     url: `/api/county`,
     method: 'get',

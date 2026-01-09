@@ -14,8 +14,10 @@ export const useProjectStore = defineStore('project', () => {
   //所有页面
   const pages = reactive<Record<string, PageSchema>>({})
 
-  const setProject = (pageId: string, page: PageSchema) => {
-    pages[pageId] = page
+  const setProject = (pageList: PageSchema[]) => {
+    pageList.forEach((page) => {
+      pages[page.id] = page
+    })
   }
 
   return {

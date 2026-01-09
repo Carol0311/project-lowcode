@@ -74,7 +74,7 @@ import { vFocus } from '@/plugins/CusDirectives'
 import { ComponentSchema } from '@/domain/schema/component'
 import { useUiConfig } from '@/composables/useUiConfig'
 import FormItem from '../SlotUI/FormItem.vue'
-import { getProvince, getCity, getDistrict, getCounty } from '@/infra/http/client'
+import { getProvince, getCity, getDistrict, getCounty } from '@/infra/http/commonApi'
 export interface AddressList {
   id: string
   parentid: string
@@ -92,7 +92,7 @@ const districtList = ref<AddressList[]>([])
 const countyList = ref<AddressList[]>([])
 
 getProvince().then((res) => {
-  provinceList.value = res
+  provinceList.value = res.data
 })
 
 const props = defineProps<{
@@ -109,7 +109,7 @@ const selectedAddress = (level: number, id: string, name: string) => {
     districtList.value = []
     countyList.value = []
     getCity({ provinceId: selected.value[0] }).then((res) => {
-      cityList.value = res
+      cityList.value = res.data
     })
   }
   if (level === 1) {
@@ -117,14 +117,14 @@ const selectedAddress = (level: number, id: string, name: string) => {
     districtList.value = []
     countyList.value = []
     getDistrict({ cityId: selected.value[1] }).then((res) => {
-      districtList.value = res
+      districtList.value = res.data
     })
   }
   if (level === 2) {
     //select district,load county
     countyList.value = []
     getCounty({ districtId: selected.value[2] }).then((res) => {
-      countyList.value = res
+      countyList.value = res.data
     })
   }
   if (level === 3) {

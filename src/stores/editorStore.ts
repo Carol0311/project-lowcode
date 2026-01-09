@@ -140,7 +140,7 @@ export const useEditorStore = defineStore('editor', () => {
 
   // ==================== 页面设置 ====================
 
-  const setCurrentPage = (pageId: string, page: PageSchema) => {
+  const setCurrentPage = (page: PageSchema) => {
     currentPage.value = page
   }
 
