@@ -3,7 +3,7 @@
     <AppHeader class="lowcode-header" />
     <div class="lowcode-container smart-container flex flex-row">
       <LeftMenu />
-      <ViewContent class="flex-1" />
+      <ViewContent class="flex-1 flex flex-col" />
       <RightPanel />
     </div>
   </div>

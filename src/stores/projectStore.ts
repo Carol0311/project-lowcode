@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { ProjectSchema, PageSchema } from '@/domain/schema'
 export const useProjectStore = defineStore('project', () => {
   //状态
@@ -12,16 +12,19 @@ export const useProjectStore = defineStore('project', () => {
   })
 
   //所有页面
-  const pages = reactive<Record<string, PageSchema>>({})
+  const pages = ref<Record<string, PageSchema>>({})
 
   const setProject = (pageList: PageSchema[]) => {
+    const newPages = {}
     pageList.forEach((page) => {
-      pages[page.id] = page
+      newPages[page.id] = page
     })
+    pages.value = newPages
   }
 
   return {
     project,
+    pages,
     setProject,
   }
 })

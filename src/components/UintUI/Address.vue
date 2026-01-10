@@ -109,7 +109,9 @@ const selectedAddress = (level: number, id: string, name: string) => {
     districtList.value = []
     countyList.value = []
     getCity({ provinceId: selected.value[0] }).then((res) => {
-      cityList.value = res.data
+      if (res.success) {
+        cityList.value = res.data
+      }
     })
   }
   if (level === 1) {
@@ -117,14 +119,18 @@ const selectedAddress = (level: number, id: string, name: string) => {
     districtList.value = []
     countyList.value = []
     getDistrict({ cityId: selected.value[1] }).then((res) => {
-      districtList.value = res.data
+      if (res.success) {
+        districtList.value = res.data
+      }
     })
   }
   if (level === 2) {
     //select district,load county
     countyList.value = []
     getCounty({ districtId: selected.value[2] }).then((res) => {
-      countyList.value = res.data
+      if (res.success) {
+        countyList.value = res.data
+      }
     })
   }
   if (level === 3) {

@@ -17,6 +17,8 @@ export const useEditorStore = defineStore('editor', () => {
 
   //当前页面
   const currentPage = ref<PageSchema>()
+  //当前页面id
+  const currentPageId = ref<string>('')
   //当前选中的组件
   const selectedComponent = ref<ComponentSchema | null>(null)
 
@@ -142,6 +144,10 @@ export const useEditorStore = defineStore('editor', () => {
 
   const setCurrentPage = (page: PageSchema) => {
     currentPage.value = page
+    currentPageId.value = page.id
+  }
+  const setCurrentPageId = (pageId: string) => {
+    currentPageId.value = pageId
   }
 
   const setSelectedComponent = (componentId: string | null) => {
@@ -231,6 +237,7 @@ export const useEditorStore = defineStore('editor', () => {
   return {
     // 状态
     currentPage,
+    currentPageId,
     selectedComponent,
 
     // 命令执行
@@ -250,6 +257,7 @@ export const useEditorStore = defineStore('editor', () => {
 
     // 设置
     setCurrentPage,
+    setCurrentPageId,
     setSelectedComponent,
 
     // 查询

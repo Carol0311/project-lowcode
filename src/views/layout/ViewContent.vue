@@ -1,69 +1,52 @@
 <template>
-  <div
-    ref="viewRef"
-    class="overflow-auto p-3 relative"
-    @dragover.prevent.stop="handleDragover(defaultRootViewId)"
-    @drop.stop="handleDropEvt(defaultRootViewId)"
-  >
-    <component
-      :is="get(com.type)"
-      v-for="com in rootComponents || []"
-      :key="com.id"
-      :data="com"
-      :data-id="com.id"
-      @click.stop="clickRef(com.id)"
-      @dragover.prevent.stop="handleDragover(com.id)"
-      @drop.stop="handleDropEvt(com.id)"
-    />
-    <Edit v-show="showTool" @show-edit="(arg) => showToolEvt(arg)" />
+  <div>
+    <PagesTab @show-edit="(arg) => showToolEvt(arg)" />
+    <div
+      ref="viewRef"
+      class="overflow-auto p-3 relative flex-1"
+      @dragover.prevent.stop="handleDragover(currentPageId)"
+      @drop.stop="handleDropEvt(currentPageId)"
+    >
+      <component
+        :is="get(com.type)"
+        v-for="com in rootComponents || []"
+        :key="com.id"
+        :data="com"
+        :data-id="com.id"
+        @click.stop="clickRef(com.id)"
+        @dragover.prevent.stop="handleDragover(com.id)"
+        @drop.stop="handleDropEvt(com.id)"
+      />
+      <Edit v-show="showTool" @show-edit="(arg) => showToolEvt(arg)" />
+    </div>
   </div>
 </template>
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { ref, watch, onUnmounted, onMounted, computed, useTemplateRef } from 'vue'
 import { Edit } from '@/components/ToolUI'
-import { generateUniqueId } from '@/utils/index'
 import { useEventBus } from '@/composables/useEventBus'
-import { ComponentSchema, PageSchema } from '@/domain/schema'
 import { useScrollPosition } from '@/composables/useScrollPosition'
 import { componentRegistry } from '@/infra/registry/componentRegistry'
 import { useProjectStore, useEditorStore, useDragStore } from '@/stores'
-import { createDefaultProps } from '@/domain/editor/treeManager'
-import { getPageList } from '@/infra/http/editorApi'
+import { getPageDetail, getPageList } from '@/infra/http/editorApi'
+import PagesTab from './PagesTab.vue'
 
 const { get } = componentRegistry
-const { setProject } = useProjectStore()
 
 const editorStore = useEditorStore()
-const { currentPage } = storeToRefs(editorStore)
+const projectStore = useProjectStore()
+
+const { currentPage, currentPageId } = storeToRefs(editorStore)
+
+const { setProject } = projectStore
 const { setCurrentPage, setSelectedComponent } = editorStore
 
 const { handleDropEvt, handleDragover } = useDragStore()
 
-//后续通过api请求获取默认页面
-const defaultPageId = generateUniqueId('Page')
-const defaultRootViewId = generateUniqueId('View')
-const defaultRootComId = generateUniqueId('Container')
-const defaultProps = createDefaultProps('Container')
-
-const defaultComponent = <ComponentSchema>{
-  id: defaultRootComId,
-  parentId: defaultRootViewId,
-  type: 'Container',
-  props: {},
-  children: [],
-}
-
-const page = <PageSchema>{
-  id: defaultRootViewId,
-  name: '默认编辑页面',
-  rootComponentIds: [defaultRootComId],
-  components: { [defaultRootComId]: defaultComponent },
-  children: { [defaultRootViewId]: [defaultRootComId] },
-}
 onMounted(() => {
   getPageList().then((res) => {
-    if (res && res.data) {
+    if (res.success && res.data) {
       setProject(res.data.pageList)
       if (res.data.pageList.length > 0) {
         setCurrentPage(res.data.pageList[0])
@@ -81,6 +64,19 @@ const rootComponents = computed(() => {
 const clickRef = (componentId: string) => {
   setSelectedComponent(componentId)
 }
+watch(
+  () => currentPageId.value,
+  (newId, oldId) => {
+    if (newId && newId !== oldId) {
+      getPageDetail({ id: newId }).then((res) => {
+        if (res.success) {
+          setCurrentPage(res.data)
+        }
+      })
+    }
+  },
+  { immediate: true, deep: true },
+)
 //显示组件编辑工具栏
 const showTool = ref(false)
 const showToolEvt = (arg: boolean) => {
