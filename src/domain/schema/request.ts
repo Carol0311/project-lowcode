@@ -19,16 +19,6 @@ export interface PageSchema {
   create_at?: Date
   update_at?: Date
 }
-//序列化PageSchema
-export interface PageEntity {
-  id: string | number
-  name: string
-  rootComponentIds: string
-  components: string
-  selectId?: string
-  create_at?: Date
-  update_at?: Date
-}
 //获取页面列表
 export interface PageListRequest {
   page?: string
@@ -68,7 +58,8 @@ export interface PageDeleteRequest {
 }
 export interface PageDeleteResponse {
   success: boolean
-  message?: string
+  message: string
+  type: string
 }
 //地址级联
 export interface AddressList {

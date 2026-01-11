@@ -4,6 +4,7 @@
 import request from './request'
 import { PageListResponse, PageResponse, PageDeleteResponse } from '@/domain/schema/request'
 
+/*********************页面操作请求api*************************************/
 //获取页面列表
 export const getPageList = (): Promise<PageListResponse> =>
   request({

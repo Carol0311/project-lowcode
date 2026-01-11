@@ -4,6 +4,7 @@
 import request from './request'
 import { AddressResponse } from '@/domain/schema/request'
 
+/*********************Address组件相关请求api************************************/
 //获取省份数据
 export const getProvince = (): Promise<AddressResponse> =>
   request({

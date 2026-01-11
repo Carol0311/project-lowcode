@@ -28,7 +28,7 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
 import { PhXCircle, PhPlus, PhDotsThreeCircle } from '@phosphor-icons/vue'
-import { createPage, deletePage, getPageList } from '@/infra/http/editorApi'
+import { createPage, deletePage, getPageList, savePage } from '@/infra/http/editorApi'
 import { useProjectStore, useEditorStore } from '@/stores'
 
 const emit = defineEmits(['showEdit'])
@@ -79,6 +79,9 @@ const deletePageAct = async (id: string) => {
 }
 const pageClick = async (id: string) => {
   emit('showEdit', false)
+  await savePage(currentPage.value).then((res) => {
+    console.log(res)
+  })
   setCurrentPageId(id)
 }
 </script>

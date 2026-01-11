@@ -1,6 +1,6 @@
 //components(UI)-->editor.store(Store)-->commandProcessor(Application)-->treemanager(Domain)
 // stores/editor.store.ts
-import { defineStore } from 'pinia'
+import { defineStore, storeToRefs } from 'pinia'
 import { ref, computed, toRaw } from 'vue'
 import { CommandProcessor } from '@/application/editor/commandProcess'
 import { createCommand } from '@/domain/schema/command'
@@ -11,8 +11,11 @@ import type {
   ComponentUpdatePayload,
 } from '@/domain/schema/index'
 
+import { useProjectStore } from './projectStore'
 // 初始化服务---模块化的单例模式
 export const useEditorStore = defineStore('editor', () => {
+  const projectStore = useProjectStore()
+  const { pages } = storeToRefs(projectStore)
   // ==================== 状态 ====================
 
   //当前页面
@@ -145,6 +148,7 @@ export const useEditorStore = defineStore('editor', () => {
   const setCurrentPage = (page: PageSchema) => {
     currentPage.value = page
     currentPageId.value = page.id
+    pages.value[currentPageId.value] = page
   }
   const setCurrentPageId = (pageId: string) => {
     currentPageId.value = pageId

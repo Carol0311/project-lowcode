@@ -48,7 +48,7 @@
           :check-icon="checkIcon"
         ></slot>
       </span>
-      <Info
+      <Tips
         v-if="config.errTip || config.helpTip"
         :err-tip="config.errTip"
         :help-tip="config.helpTip"
@@ -60,7 +60,7 @@
 import { ref } from 'vue'
 import { PhQuestion, PhAsterisk } from '@phosphor-icons/vue'
 import { useUiConfig } from '@/composables/useUiConfig'
-import { Info } from '@/components/UintUI'
+import { Tips } from '@/components/ToolUI'
 import { vDialog } from '@/plugins/CusDirectives'
 import { ComponentSchema } from '@/domain/schema/component'
 

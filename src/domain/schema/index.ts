@@ -14,3 +14,13 @@ export type {
   EditorCommand,
   BatchPayload,
 } from './command'
+export type {
+  PageResponse,
+  PageListRequest,
+  PageListResponse,
+  PageDetlRequest,
+  PageDeleteRequest,
+  PageDeleteResponse,
+  CreatePageRequest,
+} from './request'
+export type { ErrorInfo, ShortErrorInfo } from './common'

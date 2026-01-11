@@ -10,7 +10,9 @@
       <span>{{ data.name }}</span>
       <PhQuestion v-show="tips" :size="14" class="mb-0.5" />
     </div>
+    <span v-if="data.readonly">{{ inputVal }}</span>
     <div
+      v-else
       class="flex-1 border border-solid border-zinc-300 rounded h-7 px-2"
       :class="{ 'w-full my-2': direction === 'v' }"
     >
@@ -23,10 +25,12 @@ import { ref, watch, inject } from 'vue'
 import { PhQuestion } from '@phosphor-icons/vue'
 const tips = ref(false)
 const direction = ref('h')
-const propsChange = inject<{ update: () => void }>('propsChange')
-defineProps<{
+const propsChange = inject<{ update: (isPage?: boolean) => void }>('propsChange')
+const props = defineProps<{
   data: {
     name: string
+    readonly?: boolean
+    isPage?: boolean
   }
 }>()
 const model = defineModel<string>()
@@ -34,7 +38,7 @@ const inputVal = ref(model.value)
 const changeEvt = (e: Event) => {
   const target = e.target as HTMLInputElement
   model.value = target.value.trim()
-  propsChange?.update()
+  propsChange?.update(props.data.isPage)
 }
 watch(
   () => model.value,

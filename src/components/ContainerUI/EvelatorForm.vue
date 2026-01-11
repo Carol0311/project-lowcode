@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { ref, useTemplateRef, onMounted, onUnmounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useEventBus } from '@/composables/useEventBus'
+import { eventBus } from '@/infra/bus/eventBus'
 import { useEditorStore } from '@/stores/editorStore'
 import { componentRegistry } from '@/infra/registry/componentRegistry'
 import { ComponentSchema } from '@/domain/schema/component'
@@ -54,7 +54,6 @@ const children = computed(() => {
   const components = currentPage.value?.components || {}
   return props.data.children.map((id) => components[id])
 })
-const eventBus = useEventBus()
 const anchorGroup = useTemplateRef<HTMLElement>('anchorGroup')
 const active = ref(0)
 const tabsTop: number[] = []

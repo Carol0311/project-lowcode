@@ -1,5 +1,9 @@
 <template>
   <div class="props-tab">
+    <FoldAndOpen class="p-layout" :data="{ name: '页面', open: true }">
+      <PText v-model="pageData.id" :data="{ name: '页面Id', readonly: true }" />
+      <PText v-model="pageData.name" :data="{ name: '页面名称', isPage: true }" />
+    </FoldAndOpen>
     <FoldAndOpen v-show="propsData.isContainer" :data="{ name: '全局配置', open: true }">
       <PRadio v-model="propsData.tabStatus" :data="{ name: '状态', list: statusData }" />
       <PRadio v-model="propsData.tabLayout" :data="{ name: '布局', list: FColData }" />
@@ -57,10 +61,9 @@ import { storeToRefs } from 'pinia'
 import { ref, provide, watch } from 'vue'
 import { PText, PRadio, PSwitch, FoldAndOpen, PUnit } from '@/components/PropUI'
 import { useEditorStore } from '@/stores/editorStore'
-const FORM_ARR = ['Container', 'Form', 'AdvanceForm', 'EvelatorForm']
 const editorStore = useEditorStore()
-const { selectedComponent } = storeToRefs(editorStore)
-const { updateComponent } = editorStore
+const { selectedComponent, currentPage } = storeToRefs(editorStore)
+const { updateComponent, setCurrentPage } = editorStore
 interface ListItem {
   name: string
   value: number | string
@@ -97,8 +100,13 @@ const posData = ref<ListItem[]>([
   { name: '内', value: 'inner' },
 ])
 const propsData = ref<Record<string, any>>({})
-const update = () => {
-  updateComponent(propsData.value.cid, propsData.value)
+const pageData = ref<Record<string, any>>({})
+const update = (isPage?: boolean) => {
+  if (isPage) {
+    setCurrentPage({ ...currentPage.value, name: pageData.value.name })
+  } else {
+    updateComponent(propsData.value.cid, propsData.value)
+  }
 }
 provide('propsChange', { update })
 const updateValue = (params: any) => {
@@ -116,6 +124,18 @@ watch(
     }
   },
   { immediate: true },
+)
+watch(
+  () => currentPage.value,
+  (newPage, oldPage) => {
+    if ((newPage && oldPage && newPage.id !== oldPage.id) || (newPage && !oldPage)) {
+      pageData.value = {
+        id: newPage.id,
+        name: newPage.name,
+      }
+    }
+  },
+  { deep: true },
 )
 </script>
 <style scoped></style>

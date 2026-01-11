@@ -25,10 +25,11 @@
 import { storeToRefs } from 'pinia'
 import { ref, watch, onUnmounted, onMounted, computed, useTemplateRef } from 'vue'
 import { Edit } from '@/components/ToolUI'
-import { useEventBus } from '@/composables/useEventBus'
+import { eventBus } from '@/infra/bus/eventBus'
 import { useScrollPosition } from '@/composables/useScrollPosition'
 import { componentRegistry } from '@/infra/registry/componentRegistry'
 import { useProjectStore, useEditorStore, useDragStore } from '@/stores'
+
 import { getPageDetail, getPageList } from '@/infra/http/editorApi'
 import PagesTab from './PagesTab.vue'
 
@@ -84,7 +85,6 @@ const showToolEvt = (arg: boolean) => {
 }
 //页签选择与页面滚动联动事件处理
 const viewRef = useTemplateRef('viewRef')
-const eventBus = useEventBus()
 const scrollPosition = useScrollPosition()
 let tabsTop: number[] = []
 const onInitRelated = (tops: number[]) => {
