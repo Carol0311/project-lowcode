@@ -234,7 +234,7 @@ const comGroup = ref([
           { name: '复选按钮', show: true, type: 'SCheckbox', icon: icons.check },
           { name: '复选按钮组', show: true, type: 'CheckboxGroup', icon: icons.checks },
           { name: '地址级联', show: true, type: 'Address', icon: icons.listChecks },
-          { name: '开关组件', show: true, type: 'Switch', icon: icons.switch },
+          { name: '开关', show: true, type: 'Switch', icon: icons.switch },
           { name: '搜索', show: true, type: 'Search', icon: icons.search },
           { name: '分类搜索', show: true, type: 'CategorySearch', icon: icons.input },
           { name: '上传组件', show: true, type: 'Upload', icon: icons.upload },

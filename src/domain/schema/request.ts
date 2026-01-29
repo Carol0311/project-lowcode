@@ -73,3 +73,15 @@ export interface AddressResponse {
   message?: string
   data?: AddressList[]
 }
+export interface ReplyData {
+  reply: string
+  completed: boolean
+  progress: number
+  schema?: Record<string, any>
+  collectedParams?: Record<string, any>
+}
+export interface ChatResponse {
+  success: boolean
+  message?: string
+  data?: ReplyData
+}

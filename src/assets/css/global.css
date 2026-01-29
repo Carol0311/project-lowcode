@@ -14,10 +14,12 @@ body {
   display: inline-block;
   vertical-align: middle;
 }
-input {
+input,
+textarea {
   background: transparent;
 }
-input:focus {
+input:focus,
+textarea:focus {
   outline: none;
   border: 0;
   background: transparent;
