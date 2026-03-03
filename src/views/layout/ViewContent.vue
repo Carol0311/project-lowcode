@@ -19,6 +19,7 @@
       />
       <Edit v-show="showTool" @show-edit="(arg) => showToolEvt(arg)" />
     </div>
+    <div class="w-full text-center text-zinc-400 py-2">粤ICP备2026008119号-1</div>
   </div>
 </template>
 <script setup lang="ts">
