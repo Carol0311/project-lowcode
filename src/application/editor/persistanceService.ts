@@ -1,5 +1,5 @@
 // application/editor/persistence.service.ts
-import type { EditorCommand, PageSchema } from '@/domain/schema/index'
+/**import type { EditorCommand, PageSchema } from '@/domain/schema/index'
 export class PersistenceService {
   constructor(
     private editorApi: EditorApi,
@@ -65,3 +65,4 @@ export class PersistenceService {
     }
   }
 }
+*/

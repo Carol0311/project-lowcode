@@ -1,6 +1,7 @@
 //组件注册表：type → Vue 组件
 import type { Component } from 'vue'
 import * as UintUI from '@/components/UintUI'
+import * as ToolUI from '@/components/ToolUI'
 import * as ContainerUI from '@/components/ContainerUI'
 import FormItem from '@/components/SlotUI/FormItem.vue'
 import type { ComponentType } from '@/domain/schema/component'
@@ -11,7 +12,7 @@ const registry: Record<ComponentType, Component> = {
   DateRange: UintUI.DateRange,
   SSelect: UintUI.SSelect,
   Switch: UintUI.Switch,
-  Info: UintUI.Info,
+  Tips: ToolUI.Tips,
   Number: UintUI.Number,
   Price: UintUI.Price,
   Qty: UintUI.Qty,

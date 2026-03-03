@@ -7,7 +7,7 @@ import { eventBus } from '@/infra/bus/eventBus'
 const baseURL = import.meta.env.DEV ? '' : import.meta.env.VITE_LOWCODE_API_KEY
 const service = axios.create({
   baseURL,
-  timeout: 5000,
+  timeout: 5 * 60 * 100, //5 min
   headers: {
     'Content-Type': 'application/json',
     'X-Requested-With': 'XMLHttpRequest',
