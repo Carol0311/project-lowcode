@@ -2,7 +2,7 @@ import { reactive, computed } from 'vue'
 import { useEditorStore } from '@/stores/editorStore'
 import { UI_STATIC } from '@/composables/constant/uiClass'
 import { createDefaultProps } from '@/domain/editor/treeManager'
-import { ComponentType } from '@/domain/schema'
+import { ColumnSchema, ComponentType } from '@/domain/schema'
 import {
   PhGear,
   PhXCircle,
@@ -18,28 +18,32 @@ export interface UiState {
   isFocus: boolean
 }
 
-export const useUiConfig = (componentId: string) => {
+export const useUiConfig = (componentId?: string, column?: ColumnSchema) => {
   const editorStore = useEditorStore()
   const { findComponentById, updateComponent } = editorStore
 
   const component = computed(() => {
-    return findComponentById(componentId)
+    return column ? column : findComponentById(componentId)
   })
 
   const defaultProps = createDefaultProps(component.value.type)
   const config = computed(() => {
-    return {
-      ...defaultProps,
-      ...component.value.props,
-      cid: component.value.id,
-      parent: component.value.parentId,
-    }
+    return column
+      ? column.props
+      : {
+          ...defaultProps,
+          ...component.value.props,
+          cid: component.value.id,
+          parent: component.value.parentId,
+        }
   })
   //初始化更新每个组件的属性值
-  updateComponent(config.value.cid, config.value)
+  if (!column) {
+    updateComponent(config.value.cid, config.value)
+  }
 
   const parentCom = computed(() => {
-    return findComponentById(config.value.parent)
+    return column ? null : findComponentById(config.value.parent)
   })
 
   const state = reactive<UiState>({
@@ -80,9 +84,9 @@ export const useUiConfig = (componentId: string) => {
         'smart-inputBox-warning': config.value.validateStatus === 3,
         'smart-inputBox-disable': config.value.disable,
         'smart-inputBox-readonly':
-          config.value.tabStatus === undefined
+          uiByParent.tabStatus.value === undefined
             ? config.value.readonly
-            : !uiByParent.tabStatus.value,
+            : uiByParent.tabStatus.value,
       }
     }),
     checkIcon: computed(() => ({
@@ -90,7 +94,7 @@ export const useUiConfig = (componentId: string) => {
       'smart-checkbox-readonly':
         uiByParent.tabStatus.value === undefined
           ? config.value.readonly
-          : !uiByParent.tabStatus.value,
+          : uiByParent.tabStatus.value,
     })),
   }
 

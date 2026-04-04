@@ -18,16 +18,24 @@ export type ComponentType =
   | 'Upload'
   | 'Address'
   | 'Image'
+  | 'Button'
+  | 'MenuButton'
+  | 'ButtonGroup'
   | 'Search'
   | 'CategorySearch'
+  | 'Operation'
+  | 'EditTable'
+  | 'RelationTable'
+  | 'GroupTable'
+  | 'Filter'
   | 'AdvanceForm'
   | 'Container'
   | 'EvelatorForm'
   | 'Form'
 export interface ComponentProps {
   /**表单项参数 smart-form-item级别*/
-  cid: string // 不可变，用于定位页面组件节点
-  parent: string //不可变，用于定位页面组件直接父节点节点
+  cid?: string // 不可变，用于定位页面组件节点
+  parent?: string //不可变，用于定位页面组件直接父节点节点
   name: string //组件类型名称
   col?: 1 | 2 | 3 | 4 //占父级容器的列数对应["一列","二列","三列","四列"]
   label: string //label done
@@ -68,16 +76,20 @@ export interface ComponentProps {
   direct?: number //flex-direction column row
   flexDirect?: string
   showAnchor?: boolean
-  tabStatus?: 0 | 1 //容器整体设置表单项状态 ["只读态","编辑态"]done
+  tabStatus?: 0 | 1 //容器整体设置表单项状态 "编辑态"=0 false,"只读态" = 1 true
   tabLayout?: 1 | 2 | 3 | 4 //容器整体设置一行有几列表单项，对应["一列","二列","三列","四列"]
   labelPos: 'left' | 'top' | 'inner' //表单项的标签位置done
-  labelAlign: 0 | 1 //容器整体设置表单项标签对齐位置标签["left","right"]done
+  labelAlign: 0 | 1 //容器整体设置表单项标签对齐位置标签["left","right"]
 
   isContainer?: boolean //是否是容器组件
   parentDirect?: string //容器flex-direction   row | column
 
   /**表单项inputBox层级的样式*/
   inlineStyle: Record<string, any> //设计器样式面板设置的样式最终会以字符串的形式拼接起来done
+  inTable?: boolean
+  width?: number
+  minWidth?: number
+  editable?: boolean
 }
 export interface ComponentSchema {
   id: string

@@ -63,3 +63,26 @@ export const isValidateFile = (file, acceptList): boolean => {
   })
   return false
 }
+//日期格式化
+export const formatDate = (date: number, format = 'yyyy-MM-dd'): string => {
+  let result = ''
+  const d = new Date(date)
+
+  result = format.replace('yyyy', d.getFullYear() + '')
+  result = result.replace('MM', ('0' + (d.getMonth() + 1)).slice(-2))
+  result = result.replace('dd', ('0' + d.getDate()).slice(-2))
+
+  result = result.replace('HH', ('0' + d.getHours()).slice(-2))
+  result = result.replace('mm', ('0' + d.getMinutes()).slice(-2))
+  result = result.replace('ss', ('0' + d.getSeconds()).slice(-2))
+
+  return result
+}
+export const formatDateRange = (date: number[]): string => {
+  const result = []
+
+  result.push(formatDate(date[0]))
+  result.push(formatDate(date[1]))
+
+  return result.join('-')
+}

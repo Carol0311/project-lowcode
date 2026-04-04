@@ -6,7 +6,7 @@ export const COMPONENT_NAME_MAPPING = {
   Dialog: '高级对话框',
   Tabs: '选项卡',
   EditTable: '可编辑表格',
-  ParentTable: '母子表格',
+  RelationTable: '母子表格',
   Filter: '查询筛选',
   GroupTable: '分组表格',
   EvelatorForm: '电梯表单',
@@ -18,7 +18,6 @@ export const COMPONENT_NAME_MAPPING = {
   Line: '折线图',
   Ask: '对话框',
   Button: '按钮',
-  SplitButton: '分隔按钮',
   MenuButton: '菜单按钮',
   ButtonGroup: '按钮组',
   SplitLine: '分隔线',
@@ -69,7 +68,7 @@ export const COMPONENT_DEFAULT_PROPS: ComponentProps = {
   focus: false,
   showIcon: false,
 
-  tabStatus: 1,
+  tabStatus: 0,
   tabLayout: 2,
   labelPos: 'left',
   labelAlign: 0,
@@ -78,4 +77,6 @@ export const COMPONENT_DEFAULT_PROPS: ComponentProps = {
   parentDirect: 'column',
 
   inlineStyle: {},
+
+  inTable: false,
 }

@@ -1,6 +1,7 @@
 export type { ComponentSchema, ComponentType, ComponentProps } from './component'
 export type { PageSchema } from './page'
 export type { ProjectSchema } from './project'
+export type { ColumnSchema } from './column'
 export type {
   CommandPayload,
   ComponentCreatePayload,

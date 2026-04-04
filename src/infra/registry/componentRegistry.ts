@@ -2,11 +2,13 @@
 import type { Component } from 'vue'
 import * as UintUI from '@/components/UintUI'
 import * as ToolUI from '@/components/ToolUI'
+import * as TableUI from '@/components/TableUI'
 import * as ContainerUI from '@/components/ContainerUI'
 import FormItem from '@/components/SlotUI/FormItem.vue'
 import type { ComponentType } from '@/domain/schema/component'
 const registry: Record<ComponentType, Component> = {
   FormItem: FormItem,
+
   Text: UintUI.Text,
   Date: UintUI.Date,
   DateRange: UintUI.DateRange,
@@ -24,8 +26,18 @@ const registry: Record<ComponentType, Component> = {
   Upload: UintUI.Upload,
   Address: UintUI.Address,
   Image: UintUI.Image,
+  Button: UintUI.Button,
+  MenuButton: UintUI.MenuButton,
+  ButtonGroup: UintUI.ButtonGroup,
   Search: UintUI.Search,
+  Filter: UintUI.Filter,
   CategorySearch: UintUI.CategorySearch,
+  Operation: UintUI.Operation,
+
+  EditTable: TableUI.EditTable,
+  RelationTable: TableUI.RelationTable,
+  GroupTable: TableUI.GroupTable,
+
   AdvanceForm: ContainerUI.AdvanceForm,
   Container: ContainerUI.Container,
   EvelatorForm: ContainerUI.EvelatorForm,

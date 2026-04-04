@@ -11,7 +11,10 @@
       <div class="flex-1 text-center">对话标题</div>
       <PhPlusCircle :size="24" weight="duotone" class="text-orange-300" @click="startChatEvt" />
     </div>
-    <div class="message-wrapper flex flex-col flex-1 p-2.5 text-gray-600 overflow-auto">
+    <div
+      ref="msgWrapper"
+      class="message-wrapper flex flex-col flex-1 p-2.5 text-gray-600 overflow-auto"
+    >
       <div v-if="receivedInfo && receivedInfo.progress === 0" class="text-center m-auto">
         <div
           class="robot-icon inline-block w-20 h-20 bg-orange-100 flex items-center justify-center m-auto"
@@ -41,10 +44,16 @@
               class="text-blue-500"
             />
           </div>
-          <div class="my-2.5" :class="msg.role">{{ msg.content }}</div>
+          <div class="my-2.5 msg-content" :class="msg.role">{{ msg.content }}</div>
         </div>
       </template>
     </div>
+    <PhCaretCircleDoubleDown
+      v-show="showToBottom"
+      :size="24"
+      class="fixed msg-to-bottom text-orange-300"
+      @click="toBottom"
+    />
     <div class="input-wrapper flex flex-row items-center h-24 m-2.5">
       <textarea
         ref="userQst"
@@ -72,6 +81,7 @@ import {
   PhXCircle,
   PhRobot,
   PhUserCircleGear,
+  PhCaretCircleDoubleDown,
 } from '@phosphor-icons/vue'
 import { ChatHistory } from '@/views/layout'
 import { startChat, continueChat, deleteChat } from '@/infra/http/aiApi'
@@ -85,7 +95,9 @@ export interface MessageInfo {
 
 const emit = defineEmits(['open-chat', 'start-chat'])
 const showHistory = ref(false)
+const showToBottom = ref(false)
 const userQst = useTemplateRef('userQst')
+const msgWrapper = useTemplateRef('msgWrapper')
 
 const messageList = ref<MessageInfo[]>([])
 
@@ -107,6 +119,17 @@ onMounted(() => {
     }
   })
 })
+
+//聊天消息框回到顶部
+const toTop = () => {
+  msgWrapper.value.scrollTop = 0
+}
+//聊天消息框滑到底部
+const toBottom = () => {
+  const dh = msgWrapper.value.scrollHeight - msgWrapper.value.clientHeight
+  showToBottom.value = dh > 0
+  msgWrapper.value.scrollTop = Math.max(dh, 0)
+}
 
 const stopChat = () => {
   deleteChat({ sessionId: sessionId.value })
@@ -134,17 +157,20 @@ const sendMessage = () => {
   const qstMsg = userQst.value.value
   userQst.value.value = ''
   messageList.value.push({ id: messageList.value.length + 1, role: 'user', content: qstMsg })
-  continueChat({ userInput: qstMsg, sessionId: sessionId.value }).then((res) => {
-    if (res.success) {
-      receivedInfo.value = res.data
-      messageList.value.push({
-        id: messageList.value.length + 1,
-        role: 'assitant',
-        content: res.data.reply,
-      })
-      console.log(messageList.value)
-    }
-  })
+  continueChat({ userInput: qstMsg, sessionId: sessionId.value })
+    .then((res) => {
+      if (res.success) {
+        receivedInfo.value = res.data
+        messageList.value.push({
+          id: messageList.value.length + 1,
+          role: 'assitant',
+          content: res.data.reply,
+        })
+      }
+    })
+    .then(() => {
+      toBottom()
+    })
 }
 </script>
 <style scoped>
@@ -180,6 +206,13 @@ const sendMessage = () => {
 }
 .robot-icon {
   border-radius: 100%;
+}
+.msg-content {
+  white-space: pre-wrap;
+}
+.msg-to-bottom {
+  right: 1rem;
+  bottom: 9rem;
 }
 @keyframes right-to-left {
   0% {
