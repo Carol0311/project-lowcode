@@ -1,16 +1,16 @@
-// components/UintUI/Table/core/VirtualTableCore.ts
-// 这个类是纯逻辑，不依赖 Vue，可以在任何地方测试
-
+//表格虚拟滚动
 export interface VirtualTableOptions {
   rowHeight: number
   totalRows: number
   overscanCount?: number // 预渲染行数
+  mode: 'DOM' | 'CANVAS'
 }
 
 export class VirtualTableCore {
   private rowHeight: number
   private totalRows: number
   private overscanCount: number
+  private mode: 'DOM' | 'CANVAS'
   private scrollTop = 0
   private containerHeight = 0
 
@@ -18,6 +18,7 @@ export class VirtualTableCore {
     this.rowHeight = options.rowHeight
     this.totalRows = options.totalRows
     this.overscanCount = options.overscanCount || 5
+    this.mode = options.mode
   }
 
   // 计算需要渲染的行范围
@@ -28,16 +29,21 @@ export class VirtualTableCore {
     const startIndex = Math.floor(top / this.rowHeight)
     const endIndex = Math.min(startIndex + Math.ceil(height / this.rowHeight), this.totalRows)
 
+    if (this.mode === 'CANVAS' && top === this.totalRows * this.rowHeight - height) {
+      //滚动到最后，不需要预渲染行
+      return { start: startIndex, end: endIndex }
+    }
     // 添加 overscan，预渲染一些行
     const start = Math.max(0, startIndex - this.overscanCount)
     const end = Math.min(this.totalRows, endIndex + this.overscanCount)
 
-    return { start, end, startIndex, endIndex }
+    return { start, end }
   }
 
   // 计算偏移量（用于 transform）
   getOffsetY(scrollTop: number) {
-    const start = Math.floor(scrollTop / this.rowHeight)
+    let start = Math.floor(scrollTop / this.rowHeight)
+    start = Math.max(0, start - this.overscanCount)
     return start * this.rowHeight
   }
 

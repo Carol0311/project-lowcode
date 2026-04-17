@@ -2,7 +2,6 @@ import { ColumnSchema } from '@/domain/schema'
 export class LayoutManager {
   private columnWidths = <Record<string, number>>{}
   private containerWidth = 0
-  private mode: 'grid' | 'canvas' = 'grid'
 
   constructor(private columns: ColumnSchema[]) {
     this.initColumnWidths()
@@ -19,14 +18,14 @@ export class LayoutManager {
         this.columnWidths[col.key] = Number(col.props.minWidth)
       } else {
         // 默认宽度
-        this.columnWidths[col.key] = 100
+        this.columnWidths[col.key] = 60
       }
     })
   }
 
   // 响应容器宽度变化
   resize(containerWidth: number) {
-    this.containerWidth = containerWidth
+    this.containerWidth = containerWidth - 42
 
     // 计算固定宽度的总和
     let fixedTotal = 0
@@ -41,11 +40,11 @@ export class LayoutManager {
     })
 
     // 将剩余宽度均分给自适应列
-    const remainingWidth = containerWidth - fixedTotal
+    const remainingWidth = this.containerWidth - fixedTotal
     const flexWidth = remainingWidth / flexColumns.length
 
     flexColumns.forEach((col) => {
-      this.columnWidths[col.key] = Math.max(Number(col.props.minWidth) || 80, flexWidth)
+      this.columnWidths[col.key] = Math.max(Number(col.props.minWidth) || 60, flexWidth)
     })
   }
 
@@ -70,7 +69,7 @@ export class LayoutManager {
       // 百分比需要容器宽度
       return this.containerWidth * (parseFloat(width) / 100)
     }
-    return 100
+    return 60
   }
 
   // 获取当前所有列宽

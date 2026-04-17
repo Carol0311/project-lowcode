@@ -28,11 +28,14 @@ import { ref, watch, onUnmounted, onMounted, computed, useTemplateRef } from 'vu
 import { Edit } from '@/components/ToolUI'
 import { eventBus } from '@/infra/bus/eventBus'
 import { useScrollPosition } from '@/composables/useScrollPosition'
+import { useElementResize } from '@/composables/useElementResize'
 import { componentRegistry } from '@/infra/registry/componentRegistry'
 import { useProjectStore, useEditorStore, useDragStore } from '@/stores'
 
 import { getPageDetail, getPageList } from '@/infra/http/editorApi'
 import PagesTab from './PagesTab.vue'
+
+const viewRef = ref<HTMLElement>()
 
 const { get } = componentRegistry
 
@@ -55,6 +58,9 @@ onMounted(() => {
       }
     }
   })
+})
+useElementResize(viewRef, () => {
+  showTool.value = false
 })
 //根页面组件
 const rootComponents = computed(() => {
@@ -85,7 +91,6 @@ const showToolEvt = (arg: boolean) => {
   showTool.value = arg
 }
 //页签选择与页面滚动联动事件处理
-const viewRef = useTemplateRef('viewRef')
 const scrollPosition = useScrollPosition()
 let tabsTop: number[] = []
 const onInitRelated = (tops: number[]) => {

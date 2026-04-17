@@ -160,7 +160,7 @@ const dragStart = (e) => {
   z-index: 3;
 }
 .menu-detl-panel {
-  z-index: 1;
+  z-index: 999999;
 }
 /**组件面板动画设置*/
 .panel-enter-active,

@@ -1,7 +1,7 @@
 <template>
   <div
     ref="editorRef"
-    class="floating-editor border border-solid border-orange-300 bg-white flex items-center absolute"
+    class="floating-editor border-0 px-2 bg-orange-100 flex items-center absolute"
     @click.stop
   >
     <component
@@ -59,8 +59,9 @@ const editCom = computed(() => {
 const handleCellChange = (params: any) => {
   cellValue.value = params
   emits('cell-editor-change', {
-    id: props.activeEditCell.rowId,
-    [props.activeEditCell.component.key]: cellValue.value,
+    rowId: props.activeEditCell.rowId,
+    colKey: props.activeEditCell.component.key,
+    value: cellValue.value,
   })
 }
 </script>

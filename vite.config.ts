@@ -4,6 +4,7 @@ import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import vueDevTools from 'vite-plugin-vue-devtools'
+import federation from '@originjs/vite-plugin-federation'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -24,8 +25,32 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: 'dist',
       assetsDir: 'assets',
+      target: 'esnext', //vite模块联邦使用
+      cssCodeSplit: true,
+      rollupOptions: {
+        output: {
+          // 这有助于生成更清晰的 chunk
+          chunkFileNames: 'assets/[name]-[hash].js',
+          entryFileNames: 'assets/[name]-[hash].js',
+          assetFileNames: 'assets/[name]-[hash].[ext]',
+        },
+      },
     },
-    plugins: [vue(), vueJsx(), vueDevTools()],
+    plugins: [
+      vue(),
+      vueJsx(),
+      vueDevTools(),
+      federation({
+        name: 'project-lowcode',
+        filename: 'remoteEntry.js',
+        //对外共享的模块
+        exposes: {
+          './shared': './src/exposes/index.ts',
+        },
+        //对外共享的库
+        shared: ['vue', 'pinia', 'vue-router'],
+      }),
+    ],
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),

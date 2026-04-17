@@ -7,7 +7,9 @@ export function useTableWorker() {
 
   const initWorker = () => {
     //创建worker
-    worker.value = new Worker(new URL('../table.worker.ts', import.meta.url), { type: 'module' })
+    worker.value = new Worker(new URL('../core/Table.Worker.ts', import.meta.url), {
+      type: 'module',
+    })
 
     worker.value.onmessage = (e: MessageEvent) => {
       const { payload, requestId } = e.data

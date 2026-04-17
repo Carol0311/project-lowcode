@@ -131,6 +131,9 @@ const cutContainer = async (direct: string) => {
 }
 </script>
 <style scoped>
+.component-edit-tool {
+  z-index: 333;
+}
 .h-middle,
 .v-middle {
   position: absolute;

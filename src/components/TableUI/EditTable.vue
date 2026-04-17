@@ -23,21 +23,45 @@
         ></span>
       </div>
     </div>
-    <div ref="tbContainer" class="table-body" @scroll="handleScroll">
+    <div
+      ref="tbContainer"
+      class="table-body overflow-auto virtual-table"
+      :style="{ height: containerHeight + 'px' }"
+      @scroll="handleScroll"
+    >
       <div class="table-spacer" :style="{ height: totalHeight + 'px' }">
         <div
           class="table-content border border-solid border-zinc-200"
           :style="{ transform: `translateY(${offsetY}px)` }"
         >
-          <TableRow
-            v-for="row in visibleRowsData"
-            :key="row.id"
-            :row-data="row"
-            :columns="visibleColumns"
-            :column-widths="columnWidths"
-            :row-height="rowHeight"
-            @start-edit="handleStartEdit"
-          />
+          <template v-if="isFastScrolling"
+            ><div
+              v-for="line in visibleRowsData.length"
+              :key="line"
+              class="bg-zinc-200 rounded-3xl m-2.5"
+              :style="{ height: `${rowHeight - 20}px` }"
+            ></div
+          ></template>
+          <template v-else>
+            <template v-for="row in visibleRowsData" :key="row.rowId">
+              <div
+                v-if="row.isGroup"
+                class="group-header text-orange-300 px-2.5 flex flex-row items-center"
+                :style="{ height: `${rowHeight}px` }"
+              >
+                {{ row.name }}
+              </div>
+              <TableRow
+                v-else
+                :row-id="row.rowId"
+                :row-data="row"
+                :columns="visibleColumns"
+                :column-widths="columnWidths"
+                :row-height="rowHeight"
+                @start-edit="handleStartEdit"
+              />
+            </template>
+          </template>
         </div>
       </div>
     </div>
@@ -52,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, toRaw } from 'vue'
 import { throttle } from 'lodash-es'
 import TableRow from './TableRow.vue'
 import FloatingEditor from './FloatingEditor.vue'
@@ -63,6 +87,10 @@ import { useElementResize } from '@/composables/useElementResize'
 import { COMPONENT_DEFAULT_PROPS } from '@/domain/constants/props'
 import { ComponentSchema, ComponentType, ColumnSchema } from '@/domain/schema'
 
+const { initWorker, sendMessage } = useTableWorker()
+
+const isGroup = true
+const expandGroup = ref<string[]>([])
 const props = defineProps<{
   data: ComponentSchema
 }>()
@@ -83,8 +111,8 @@ const tbContainer = ref<HTMLElement>()
 
 //默认行高
 const rowHeight = ref(40)
-//默认表格宽度
-const totalHeight = ref<number>(400)
+//默认表格高度
+const containerHeight = ref<number>(200)
 //获取表格列设置设局
 const visibleColumns = ref<ColumnSchema[]>([
   {
@@ -124,71 +152,47 @@ const visibleColumns = ref<ColumnSchema[]>([
     props: { ...COMPONENT_DEFAULT_PROPS, inTable: true },
   },
 ])
-//获取表格数据
-const tableTata = ref({
-  id: 'editTable1',
-  operation: ['export', 'import'],
-  page: 1,
-  totalPage: 10,
-  rows: [
-    {
-      id: 'data_0',
-      company: 'XXXX技术有限公司',
-      amount: 3456.0,
-      currency: 'CNY',
-      progress: '100%',
-      date: '2025-3-25',
-      operation: ['edit', 'delete'],
-    },
-    {
-      id: 'data_1',
-      company: 'XXXX技术有限公司',
-      amount: 3456.0,
-      currency: 'CNY',
-      progress: '100%',
-      date: '2025-3-26',
-      operation: ['edit', 'delete'],
-    },
-
-    {
-      id: 'data_2',
-      company: 'XXXX技术有限公司',
-      amount: 3456.0,
-      currency: 'CNY',
-      progress: '100%',
-      date: '2025-3-27',
-      operation: ['edit', 'delete'],
-    },
-
-    {
-      id: 'data_3',
-      company: 'XXXX技术有限公司',
-      amount: 3456.0,
-      currency: 'CNY',
-      progress: '100%',
-      date: '2025-3-28',
-      operation: ['edit', 'delete'],
-    },
-
-    {
-      id: 'data_4',
-      company: 'XXXX技术有限公司',
-      amount: 3456.0,
-      currency: 'CNY',
-      progress: '100%',
-      date: '2025-3-29',
-      operation: ['edit', 'delete'],
-    },
-  ],
-})
-const visibleRowsData = ref(tableTata.value.rows)
+const totalCount = ref<number>(0)
+const totalHeight = ref<number>(0)
+const visibleRowsData = ref<any[]>([])
 
 /***表格自适应处理start***/
 const tableLayout = new LayoutManager(visibleColumns.value)
 const columnWidths = ref<Record<string, number>>({})
 
+// 虚拟滚动处理
+const { offsetY, visibleRange, isFastScrolling, handleScroll, updateTotalRows } = useVirtualTable({
+  rowHeight: 40,
+  totalRows: totalCount.value,
+  overscanCount: 20,
+  tbContainer,
+  mode: 'DOM',
+})
+
 onMounted(() => {
+  //初始化表格列
   columnWidths.value = { ...tableLayout.getColumnWidths() }
+  //初始化table worker处理数据
+  initWorker()
+
+  const action = isGroup ? 'INIT_GROUP' : 'INIT'
+  const actionParams = isGroup
+    ? {
+        data: [],
+        overscanCount: 20,
+        groupBy: ['amount', 'date'],
+      }
+    : { data: [], columns: toRaw(visibleColumns.value), overscanCount: 20 }
+  sendMessage(action, actionParams).then((result) => {
+    console.log(result)
+    visibleRowsData.value = result.data
+    totalCount.value = result.totalCount
+    totalHeight.value = totalCount.value * rowHeight.value
+    if (isGroup) {
+      expandGroup.value = result.totalGroupNames
+    }
+    updateTotalRows(totalCount.value)
+  })
 })
 
 //表格自适应resize处理
@@ -272,22 +276,33 @@ const handleStartEdit = ({ rowId, colKey, value, position }) => {
 }
 //可编辑单元格数据变化事件处理
 const handleEditorChange = (changeData: Record<string, any>) => {
-  const index = visibleRowsData.value.findIndex((row) => row.id === changeData.id)
-  if (index !== -1) {
-    visibleRowsData.value[index] = { ...visibleRowsData.value[index], ...changeData }
-    tableTata.value.rows = { ...visibleRowsData.value }
-  }
+  const action = isGroup ? 'UPDATE_CELL_IN_GROUP' : 'UPDATE_CELL'
+  sendMessage(action, changeData).then((result) => {
+    const index = visibleRowsData.value.findIndex((r) => r.rowId === result.rowId)
+    if (index !== -1) {
+      visibleRowsData.value[index] = result.updatedRow
+    }
+  })
 }
 
-const handleCloseEdit = () => {}
-
-// 虚拟滚动逻辑...
-const { offsetY, handleScroll, visibleRange } = useVirtualTable({
-  rowHeight: 40,
-  totalRows: 100,
-  tbContainer,
+watch(visibleRange, (newRange, oldRange) => {
+  if (newRange !== oldRange) {
+    const action = isGroup ? 'SCROLL_GROUP' : 'SCROLL'
+    const actionParams = isGroup
+      ? { ...toRaw(newRange), expandGroup: toRaw(expandGroup.value) }
+      : toRaw(newRange)
+    sendMessage(action, actionParams).then((result) => {
+      visibleRowsData.value = result.data
+    })
+  }
 })
-
-// Worker 通信...
-const { sendMessage } = useTableWorker()
 </script>
+<style scoped>
+.virtual-table {
+  will-change: transform;
+  contain: strict;
+}
+.virtual-table .table-content {
+  will-change: transform;
+}
+</style>
